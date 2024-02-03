@@ -1,0 +1,36 @@
+.error-msg {
+  color: red;
+  font-size: 14px;
+}
+
+label span {
+  color: red;
+}
+
+.wrapper {
+  display: flex;
+}
+
+#root {
+  background: white;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+ input:disabled,
+select:disabled {
+  border: 1px #b2b7de solid !important;
+  background-color: "whitesmoke" !important;
+} 
+
+label {
+  margin-bottom: 0 !important;
+}
+
+input:disabled + label {
+  margin-bottom: 0 !important;
+}
+
+/* monazir */
+
+.lefttext{width: 100%;}
