@@ -1,10 +1,8 @@
 import React from "react";
 import ReactEcharts from "echarts-for-react";
 
-const BarGraph = ({ graphColor,graphData }) => {
-  console.log("graphData",graphData.closeTickets)
-  const { closeTickets, openTickets, pendingTickets } = graphData;
-
+const BarGraph = ({ graphColor,barData }) => {
+  const {closeTickets,lastSevenDaysOpenTickets,openTickets,pendingTickets,totalTickets} = barData;
   let base = +new Date(1988, 9, 3);
   let oneDay = 24 * 3600 * 1000;
   let data = [[base, Math.random() * 300]];
@@ -84,6 +82,8 @@ const BarGraph = ({ graphColor,graphData }) => {
         name: "Open Tickets",
         type: "bar",
         data: [ openTickets
+          // 222.0, 334.9, 117.0, 223.2, 235.6, 76.7, 135.6, 162.2, 232.6, 20.0,
+          // 6.4, 3.3,
         ],
         itemStyle: {
           normal: {
@@ -96,7 +96,7 @@ const BarGraph = ({ graphColor,graphData }) => {
       {
         name: "Pending Tickets",
         type: "bar",
-        data: [pendingTickets
+        data: [ pendingTickets
         ],
         itemStyle: {
           normal: {

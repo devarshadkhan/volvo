@@ -203,13 +203,13 @@ console.log(values);
         }
       }
 
-      if (type === "add") {
-        dispatch(addUserAction(formData));
-      } else if (type === "update") {
-        dispatch(updateUserAction({ id: values.id, data: formData }));
-      } else if (type === "profile") {
-        dispatch(updateProfileAction(formData));
-      }
+        if (type === "add") {
+          dispatch(addUserAction(formData));
+        } else if (type === "update") {
+          dispatch(updateUserAction({ id: values.id, data: formData }));
+        } else if (type === "profile") {
+          dispatch(updateProfileAction(formData));
+        }
       setRouteFlag(true);
     },
   });

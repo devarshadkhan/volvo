@@ -1742,6 +1742,8 @@
 
 .dropdown-menus{
   display: block;
+  /* background: #545eb3; */
+  padding: 18px 62px;
 }
 
 
@@ -1749,6 +1751,17 @@
 
 
  .dropdown-menus >a.active,   .dropdown-menus>.menu>a.active {
+  background: #545eb3;
+  /* width: 100%; */
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  letter-spacing: 0.2px;
+  color: #fff;
+}
+.qwerty .active{
   background: #545eb3;
   /* width: 100%; */
   font-family: "Inter";

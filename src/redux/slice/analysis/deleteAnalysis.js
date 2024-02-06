@@ -1,45 +1,47 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
 
-export const updateUserAction = createAsyncThunk(
-  "updateUser",
-  async ({ id, data }) => {
-    return await makeApiRequest(`/api/user/update?userId=${id}`, {
-      token: getToken(),
-      data,
-      method: "POST",
-    });
+export const deleteAnalysisData = createAsyncThunk(
+  "getAllAnalysisData",
+  async (delID) => {
+    return await makeApiRequest(
+      `/api/analysis/delete-by-id?analysisId=${delID}`,
+      {
+        method: "DELETE",
+        token: getToken(),
+      }
+    );
   }
 );
 
 const initialState = {
-  user: {},
+  data: [],
   loading: false,
   error: "",
   message: "",
   success: false,
 };
 
-const updateUserSlice = createSlice({
-  name: "updateUser",
+const deleteAnalysis = createSlice({
+  name: "deleteAnalysis",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(updateUserAction.pending, (state) => {
+      .addCase(deleteAnalysisData.pending, (state) => {
         state.loading = true;
         state.error = "";
         state.success = false;
       })
-      .addCase(updateUserAction.fulfilled, (state, { payload }) => {
-        console.log("UUUPPDATE  UUSSEERR",payload);
-        state.user = payload.data;
+      .addCase(deleteAnalysisData.fulfilled, (state, { payload }) => {
+        // console.log(payload);
+        state.data = payload;
         state.loading = false;
         state.success = true;
         state.error = "";
         state.message = payload.message;
       })
-      .addCase(updateUserAction.rejected, (state, { error }) => {
+      .addCase(deleteAnalysisData.rejected, (state, { error }) => {
         state.loading = false;
         state.error = error.message;
         state.success = false;
@@ -50,4 +52,4 @@ const updateUserSlice = createSlice({
   },
 });
 
-export default updateUserSlice.reducer;
+export default deleteAnalysis.reducer;

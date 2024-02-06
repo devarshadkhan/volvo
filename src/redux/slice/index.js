@@ -20,6 +20,13 @@ import { default as createUserAccessSlice } from "./uac/createUserAccessSlice";
 import { default as getUserByTokenSlice } from "./users/getUserByTokenSlice";
 import { default as getChatBot } from "./chatBot/chatBotSlice";
 import { default as getDashboardDataListing } from "./dashboard/getDashboardListingSlice";
+import { default as getAllAnalysisSlice } from "./analysis/getAllAnalysisSlice";
+import { default as createAnalysis } from "./analysis/createAnalysis";
+import { default as deleteAnalysis } from "./analysis/deleteAnalysis";
+import { default as analysisType } from "./analysis/analysisType";
+import { default as updateAnalysis } from "./analysis/updateAnalysis";
+import { default as getAnalysisByIdSlice } from "./analysis/getAllAnalysisSlice";
+
 
 export {
   signinSlice,
@@ -43,5 +50,11 @@ export {
   createUserAccessSlice,
   getUserByTokenSlice,
   getChatBot,
-  getDashboardDataListing
+  getDashboardDataListing,
+  getAllAnalysisSlice,
+  createAnalysis,
+  deleteAnalysis,
+  analysisType,
+  updateAnalysis,
+  getAnalysisByIdSlice
 };

@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
 
-export const updateUserAction = createAsyncThunk(
-  "updateUser",
-  async ({ id, data }) => {
-    return await makeApiRequest(`/api/user/update?userId=${id}`, {
+export const editUpdateAnalysis = createAsyncThunk(
+  "getAllAnalysisData",
+  async ({id, data}) => {
+    return await makeApiRequest(`/api/analysis/update?analysisId=${id}`, {
       token: getToken(),
       data,
       method: "POST",
@@ -13,33 +13,33 @@ export const updateUserAction = createAsyncThunk(
 );
 
 const initialState = {
-  user: {},
+  data: {},
   loading: false,
   error: "",
   message: "",
   success: false,
 };
 
-const updateUserSlice = createSlice({
-  name: "updateUser",
+const updateAnalysis = createSlice({
+  name: "createAnalysis",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(updateUserAction.pending, (state) => {
+      .addCase(editUpdateAnalysis.pending, (state) => {
         state.loading = true;
         state.error = "";
         state.success = false;
       })
-      .addCase(updateUserAction.fulfilled, (state, { payload }) => {
-        console.log("UUUPPDATE  UUSSEERR",payload);
-        state.user = payload.data;
+      .addCase(editUpdateAnalysis.fulfilled, (state, { payload }) => {
+        // console.log("UPPDATEAPI", payload);  
+        state.data = payload;
         state.loading = false;
         state.success = true;
         state.error = "";
         state.message = payload.message;
       })
-      .addCase(updateUserAction.rejected, (state, { error }) => {
+      .addCase(editUpdateAnalysis.rejected, (state, { error }) => {
         state.loading = false;
         state.error = error.message;
         state.success = false;
@@ -50,4 +50,4 @@ const updateUserSlice = createSlice({
   },
 });
 
-export default updateUserSlice.reducer;
+export default updateAnalysis.reducer;

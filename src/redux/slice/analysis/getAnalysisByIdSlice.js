@@ -1,16 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
 
-export const updateUserAction = createAsyncThunk(
-  "updateUser",
-  async ({ id, data }) => {
-    return await makeApiRequest(`/api/user/update?userId=${id}`, {
-      token: getToken(),
-      data,
-      method: "POST",
-    });
-  }
-);
+export const getAnalysisByIdAction = createAsyncThunk("getAnalysisByIdAction", async (id) => {
+  return await makeApiRequest(`/api/analysis/get-all-data-by-id?analysisId=${id}`, {
+    apiKey:" eyJhbGciOiJIUzI1NiJ9.YXBpLXN1Y2Nlc3M.kclBgA_U9lm5u310ol90mAiN0cVYhqPyaRcqStCWWtA",
+  });
+});
 
 const initialState = {
   user: {},
@@ -20,26 +15,26 @@ const initialState = {
   success: false,
 };
 
-const updateUserSlice = createSlice({
-  name: "updateUser",
+const getAnalysisByIdSlice = createSlice({
+  name: "getAnalysisById",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(updateUserAction.pending, (state) => {
+      .addCase(getAnalysisByIdAction.pending, (state) => {
         state.loading = true;
         state.error = "";
         state.success = false;
       })
-      .addCase(updateUserAction.fulfilled, (state, { payload }) => {
-        console.log("UUUPPDATE  UUSSEERR",payload);
-        state.user = payload.data;
+      .addCase(getAnalysisByIdAction.fulfilled, (state, { payload }) => {
+        console.log("view anad",payload);
+        state.user = payload;
         state.loading = false;
         state.success = true;
         state.error = "";
         state.message = payload.message;
       })
-      .addCase(updateUserAction.rejected, (state, { error }) => {
+      .addCase(getAnalysisByIdAction.rejected, (state, { error }) => {
         state.loading = false;
         state.error = error.message;
         state.success = false;
@@ -50,4 +45,4 @@ const updateUserSlice = createSlice({
   },
 });
 
-export default updateUserSlice.reducer;
+export default getAnalysisByIdSlice.reducer;

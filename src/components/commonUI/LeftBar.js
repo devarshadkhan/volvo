@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { getMenuAction } from "../../redux/slice/menu/getMenuSlice";
 
 const LeftBar = ({ toggleMenu }) => {
   const dispatch = useDispatch();
+  const params = useLocation()
+  // console.log("qq",params.pathname);
   const menu = useSelector((state) => state.menu);
   const [activeSubMenu, setActiveSubMenu] = useState();
 
@@ -17,25 +19,26 @@ const LeftBar = ({ toggleMenu }) => {
     setActiveSubMenu(activeSubMenu === index ? null : index);
   };
 
+  
   return (
     <div className={toggleMenu ? "leftBar partialLeftBar" : "leftBar"}>
       {menu?.modules?.map((menuItem, index) => (
         <>
           {menuItem.slug === "setting" ? (
-          <>  <a onClick={() => handleSubMenuToggle(index)}>
+          <>  <a onClick={() => handleSubMenuToggle(index)} className={params.pathname === "/analytics" ? "qwerty":""}>
               <i className={menuItem.iconTag}></i>
-              <span >{menuItem.moduleName} </span> 
+              <span>{menuItem.moduleName} </span> 
               <div className="drop"><i class={activeSubMenu ? "fa-solid fa-chevron-up": "fa-solid fa-chevron-down"} id="dropDonMenu"></i></div>
             </a>
             {activeSubMenu === index && (
-                <div className="dropdown-menus">
+                <>
                   {menuItem.childArray.map((subItem, subIndex) => (
                     <NavLink to={subItem.slug} key={subIndex}>
                       <i className={subItem.iconTag}></i>
                       <span>{subItem.moduleName}</span>
                     </NavLink>
                   ))}
-                </div>
+                </>
               )}</>
           ) : (
             <NavLink to={menuItem.slug} key={index}>

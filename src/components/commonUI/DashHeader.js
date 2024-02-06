@@ -154,7 +154,7 @@ const DashHeader = ({ setToggleMenu }) => {
         >
           <span className="username">
             {handleFullName({ fullName, fname: u?.fname, lname: u?.lname }) ||
-              "Loading..."}
+              "Loading..."} 
           </span>
           <div className="profilePicture">
             <img

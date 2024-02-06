@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getDashboardDataListing } from "../../redux/slice/dashboard/getDashboardListingSlice";
 import Sketlon from "../../components/commonUI/Sketlon";
 import Pagination from "../../components/commonUI/Pagination";
+import PieGraph from "../../components/PieGraph";
 
 const Dashboard = () => {
   /**
@@ -12,7 +13,7 @@ const Dashboard = () => {
    */
   const dispatch = useDispatch()
   const getDataList = useSelector((item)=> item)
-  
+    // console.log(getDataList);
   // lets fetch data within one variable
   
   const fetchData = getDataList.getDashboardDataListing.tickets 
@@ -21,7 +22,7 @@ const Dashboard = () => {
 
 
   const [pageNumber, setPageNumber] = useState(0);
-  const startSerialNumber = pageNumber * 10 + 1;
+    const startSerialNumber = pageNumber * 10 + 1;
 
 
 
@@ -124,7 +125,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="graphbg">
-                  <BarGraph graphData={fetchData} />
+                  <BarGraph barData={fetchData}/>
                 </div>
               </div>
               <div className="col-lg-3 mb-3">
@@ -140,12 +141,15 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="graphPieChart">
-                  {/* <PieGraph /> */}
+                  <PieGraph pieData={fetchData} />
+                </div>
+                {/* <div className="graphPieChart">
+                  <PieGraph />
                   <img
                   src={`${process.env.PUBLIC_URL}/icons-images/dashboard-graph2.png`}
                   alt="icon"
                 />
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

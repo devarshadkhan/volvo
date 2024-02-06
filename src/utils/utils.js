@@ -283,7 +283,7 @@ export const getToken = () => {
 };
 
 export function isPermitted(...values) {
-  console.log("CHECK",...values);
+  // console.log("CHECK",...values);
   return values.every((value) => value === "1");
 }
 

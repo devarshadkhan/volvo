@@ -40,6 +40,7 @@ const AddUserForm = ({ onClose, disable, type }) => {
   const dispatch = useDispatch();
   const addUser = useSelector((state) => state.addTicket);
   const userById = useSelector((state) => state.ticketsById);
+  console.log("pp",userById);
   const updateProfile = useSelector((state) => state.updateProfile);
   const updateUser = useSelector((state) => state.updateTicket);
   const allTeams = useSelector((state) => state.allTeams);

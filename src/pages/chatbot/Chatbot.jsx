@@ -6,6 +6,7 @@ import {
   getCurrentUserLT,
   getFirstLetterName,
   getToken,
+  handleFullName,
   notify,
 } from "../../utils/utils";
 import Messaging from "./Components/Messaging";
@@ -17,10 +18,11 @@ const Chatbot = () => {
   const friendShow = () => setTab(!friendbox);
   const [Groupbox, setShow] = useState(true);
   const u = useSelector((state) => state.userByToken.user);
+  console.log("USER DETAIL ", u );
   // console.log("adedsd",u);
   let socket = useRef();
   const senderId = getCurrentUserLT()?.id;
-  console.log("ccccccccccccccccccccccccccccccccc",senderId);
+  // console.log("ccccccccccccccccccccccccccccccccc",senderId);
   // console.log("wqsd",u.id);
   const [userList, setUserList] = useState([]);
   // console.log(userList);
@@ -30,7 +32,10 @@ const Chatbot = () => {
   const [newMessage, setNewMessage] = useState("");
 
   const GroupShow = () => setShow(!Groupbox);
-
+  // const [u, setU] = useState({});
+  // useEffect(() => {
+  //   if (userByToken.success) setU(userByToken.user);
+  // }, [userByToken.success]);
   useEffect(() => {
     const res = io(process.env.REACT_APP_BASE_URL, {
       auth: { token: getToken() },
@@ -149,11 +154,12 @@ const Chatbot = () => {
       <div className="sidepanel">
         <div class="top-profile">
           <div class="users">
-            <img src="/icons-images/profile1.png" />
+            <img src={u.profileImage} />
             <h3>
-              Naiyana <i class="fa-solid fa-pen edit-icon "></i>
+            {handleFullName({ fullName, fname: u?.fname, lname: u?.lname }) ||
+              "Loading..."}  <i class="fa-solid fa-pen edit-icon "></i>
               <br />
-              <font>Senior Developer</font>
+              {/* <font>{u.role}</font> */}
             </h3>
           </div>
         </div>
@@ -166,7 +172,7 @@ const Chatbot = () => {
         <hr />
 
         <div className="scrollbar">
-          <div className="chatGroup">
+          {/* <div className="chatGroup">
             <h2>
               Group 3
               <span onClick={GroupShow}>
@@ -206,7 +212,7 @@ const Chatbot = () => {
                 </NavLink>
               </div>
             )}
-          </div>
+          </div> */}
 
           <div className="chatGroup">
             <h2>

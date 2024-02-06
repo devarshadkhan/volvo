@@ -31,6 +31,7 @@ const   Users = () => {
   const users = useSelector((s) => s.users);
   const deleteUser = useSelector((s) => s.deleteUser);
   const addUser = useSelector((s) => s.addUser);
+  // console.log("qwwqwqw",addUser);
   const userStatus = useSelector((s) => s.userStatus);
   const roles = useSelector((s) => s.roles);
   const searchUser = useSelector((s) => s.searchUser);
@@ -65,17 +66,19 @@ const   Users = () => {
     updateUser.success,
   ]);
 
-  const initialValues = {
-    searchValue: "",
-    status: "",
-    userType: "",
-  };
+ 
 
   const handleStatusChange = (value, id) => {
     console.log("VALUE_______ID",value, id);
     dispatch(userStatusAction({ data: { status: value }, id }));
   };
 
+
+ const initialValues = {
+    searchValue: "",
+    status: "",
+    userType: "",
+  };
   // handling CSV
   useEffect(() => {
     if (searchCSVUsers.success && forCSV) {
