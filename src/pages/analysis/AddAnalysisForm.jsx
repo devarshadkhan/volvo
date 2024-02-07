@@ -7,88 +7,132 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAnalysisType } from "../../redux/slice/analysis/analysisType";
 import { editUpdateAnalysis } from "../../redux/slice/analysis/updateAnalysis";
 import { getAnalysisByIdAction } from "../../redux/slice/analysis/getAnalysisByIdSlice";
+import Success from "../../components/commonUI/Success";
 const validationSchema = yup.object({
-  name: yup.string("Enter your AnalyticsName").required("Analytics name is required"),
-  analysisType: yup.string("Select Analytics Type").required("Analytics Type is required"),
+  name: yup
+    .string("Enter your AnalyticsName")
+    .required("Analytics name is required"),
+  analysisType: yup
+    .string("Select Analytics Type")
+    .required("Analytics Type is required"),
   status: yup.string("Select Status").required("Status is required"),
 });
 
-const AddAnalysisForm = ({ onClose, disable, type, analysisId, onAdd , initialData }) => {
+const AddAnalysisForm = ({
+  onClose,
+  disable,
+  type,
+  analysisId,
+  onAdd,
+  initialData,
+}) => {
   const initialValues = {
     name: "",
-      analysisType: "",
-      status: "",
+    analysisType: "",
+    status: "",
   };
-
+  // const userById = useSelector((state) => state.userById);
+  // console.log("UUUUUUU",userById);
+  const [success, setSuccess] = useState(false);
+  const [routeFlag, setRouteFlag] = useState(false);
   const [userValues, setUserValues] = useState(initialValues);
- 
+  const getAnalysisById = useSelector(
+    (state) => state.getAnalysisById.analysisData
+  );
+  console.log("getAnalysisById", getAnalysisById);
+  const isDisabled = type === "view" || type === "update" || type === "profile";
+  // const AllStore = useSelector((state)=> state)
+  // console.log("ALL_______________________STRORE",AllStore);
 
-
-
-
+  const deleteAnalysis = useSelector((s) => s.deleteAnalysis);
+  const AnalysisAll = useSelector((s) => s.getAnalysis);
+  const updateAnalysis = useSelector((s) => s.updateAnalysis);
+  const createAnalysis = useSelector((s) => s.createAnalysis);
 
   const dispatch = useDispatch();
   const fetchData = useSelector((state) => state.analysisType.analysisData);
 
-  const formik = useFormik({
-    initialValues: initialValues || initialData ,
-    validationSchema: validationSchema,
-    // onSubmit: (values,{resetForm}) => {
-    //   const newValue = {
-    //     name: values.name,
-    //     analysisType: values.analysisType,
-    //     status: values.status,
-    //   };
+  useEffect(() => {
+    if (type === "add") {
+      setUserValues(initialValues);
+    }
+    if (getAnalysisById?.success) {
+      if (type === "profile") {
+        setUserValues({
+          name: getAnalysisById.analysisData?.name,
+          analysisType: getAnalysisById.analysisData?.analysisType,
+          status: getAnalysisById.analysisData?.status,
+        });
+      } else if (type === "update" || type === "view") {
+        setUserValues({
+          name: getAnalysisById.analysisData?.name,
+          analysisType: getAnalysisById.analysisData?.analysisType,
+          status: getAnalysisById.analysisData?.status,
+        });
+      }
+    }
+  }, [getAnalysisById?.success]);
 
-    //   if (type === "add") {
-    //     dispatch(createAnalysisData(values));
-    //   } else if (type === "update") {
-    //     dispatch(editUpdateAnalysis({ id: analysisId, data: newValue }));
-    //   } else if (type === "profile") {
-    //     dispatch(getAnalysisByIdAction(values));
-    //   }
-    // },
+  useEffect(() => {
+    if (createAnalysis.success && routeFlag) {
+      setSuccess(true);
+    }
+  }, [createAnalysis.success, routeFlag]);
+  useEffect(() => {
+    if (updateAnalysis.success && routeFlag) {
+      setSuccess(true);
+    }
+  }, [routeFlag, updateAnalysis.success]);
+
+  const formik = useFormik({
+    initialValues: userValues,
+    validationSchema: validationSchema,
+    enableReinitialize: true, // Add this property
     onSubmit: async (values, { resetForm }) => {
       const newValue = {
-        name: values.name,
-        analysisType: values.analysisType,
-        status: values.status,
+        name: values.name || "",
+        analysisType: values.analysisType || "",
+        status: values.status || "",
       };
-    
+
       if (type === "add") {
         // Assuming createAnalysisData is an asynchronous operation
         await dispatch(createAnalysisData(values));
         // await onAdd(values);
-        resetForm();
+        // resetForm();
+        // onClose()
+        setSuccess(true);
         // window.location.reload();
       } else if (type === "update") {
+        const newValue = {
+          name: values.name,
+          analysisType: values.analysisType,
+          status: values.status,
+        };
         // Assuming editUpdateAnalysis is an asynchronous operation
         await dispatch(editUpdateAnalysis({ id: analysisId, data: newValue }));
-      } 
-    
+        setSuccess(true);
+        // resetForm();
+        // onClose()
+        // window.location.reload();
+      } else if (type === "view") {
+        // Assuming editUpdateAnalysis is an asynchronous operation
+        await dispatch(getAnalysisByIdAction(newValue));
+        resetForm();
+        onClose();
+        // window.location.reload();
+      }
+      setRouteFlag(true);
     },
-  }  
-  );
+  });
 
   useEffect(() => {
-    if (type === "view" && initialData) {
-      console.log("initialData initialData initialData  form",initialData);
-      formik.setValues({
-        name: initialData.name,
-        analysisType: initialData.analysisType,
-        status: initialData.status,
-      });
-    }
-  }, [type, initialData]);
-
-  // useEffect(() => {
-  //   dispatch(getAnalysisType());
-  // }, []);
-
+    dispatch(getAnalysisType());
+  }, []);
 
   return (
     <>
-      <form onSubmit={formik.handleSubmit}>
+      <form onSubmit={formik.handleSubmit} autoComplete="off">
         <div className="scroll">
           <div className="mar-30">
             <div className="Add-form-group">
@@ -105,6 +149,7 @@ const AddAnalysisForm = ({ onClose, disable, type, analysisId, onAdd , initialDa
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.name}
+                    disabled={type === "view" || disable}
                   />
                   {showError(formik.errors.name, formik.touched.name)}
                 </div>
@@ -119,23 +164,21 @@ const AddAnalysisForm = ({ onClose, disable, type, analysisId, onAdd , initialDa
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.analysisType}
+                    disabled={type === "view" || disable}
                   >
                     <option value="" defaultValue>
                       Select Analytics Type
                     </option>
-                    <option value="1" >
-                     Resolution
-                    </option>
-                    <option value="2" >
-                   Purpose
-                    </option>
-                    {/* {fetchData?.data?.map((ele) => (
+                    {fetchData?.data?.map((ele) => (
                       <option value={ele.id} key={ele.id}>
                         {ele.name}
                       </option>
-                    ))} */}
+                    ))}
                   </select>
-                  {showError(formik.errors.analysisType, formik.touched.analysisType)}
+                  {showError(
+                    formik.errors.analysisType,
+                    formik.touched.analysisType
+                  )}
                 </div>
 
                 <div className="col-md-6 mb-2">
@@ -148,6 +191,7 @@ const AddAnalysisForm = ({ onClose, disable, type, analysisId, onAdd , initialDa
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.status}
+                    disabled={type === "view" || disable}
                   >
                     <option value="" selected>
                       Select Status
@@ -179,6 +223,18 @@ const AddAnalysisForm = ({ onClose, disable, type, analysisId, onAdd , initialDa
           </div>
         </div>
       </form>
+
+      <Success
+        isOpen={success}
+        onClose={() => setSuccess(false)}
+        message={
+          type === "update" ? "Updated successfully!" : "Added Successfully"
+        }
+        descMessage={`Your informations has been ${
+          type === "add" ? "added" : "updated"
+        } successfully!`}
+        closePreviousModal={onClose}
+      />
     </>
   );
 };

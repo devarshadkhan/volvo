@@ -161,7 +161,13 @@ const AddUserForm = ({ onClose, disable, type }) => {
     touched,
     handleSubmit,
     setFieldValue,
-  } = useFormik({initialValues: userValues,validationSchema:type === "add" ? addUserHandleSchema(selectedRole).concat(validationSchema) : updateUserSchema,enableReinitialize: true,
+  } = useFormik({
+    initialValues: userValues,
+    validationSchema:
+      type === "add"
+        ? addUserHandleSchema(selectedRole).concat(validationSchema)
+        : updateUserSchema,
+    enableReinitialize: true,
     onSubmit: (values) => {
       const newValue = {
         fname: values.fname,
@@ -172,7 +178,7 @@ const AddUserForm = ({ onClose, disable, type }) => {
         gender: values.gender,
         profileImage: values.profileImage,
       };
-console.log(values);
+      console.log(values);
       const formData = new FormData();
       // Loop through the values object and append each key-value pair to the FormData
 
@@ -203,13 +209,13 @@ console.log(values);
         }
       }
 
-        if (type === "add") {
-          dispatch(addUserAction(formData));
-        } else if (type === "update") {
-          dispatch(updateUserAction({ id: values.id, data: formData }));
-        } else if (type === "profile") {
-          dispatch(updateProfileAction(formData));
-        }
+      if (type === "add") {
+        dispatch(addUserAction(formData));
+      } else if (type === "update") {
+        dispatch(updateUserAction({ id: values.id, data: formData }));
+      } else if (type === "profile") {
+        dispatch(updateProfileAction(formData));
+      }
       setRouteFlag(true);
     },
   });

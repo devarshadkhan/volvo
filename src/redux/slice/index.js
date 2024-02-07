@@ -21,11 +21,15 @@ import { default as getUserByTokenSlice } from "./users/getUserByTokenSlice";
 import { default as getChatBot } from "./chatBot/chatBotSlice";
 import { default as getDashboardDataListing } from "./dashboard/getDashboardListingSlice";
 import { default as getAllAnalysisSlice } from "./analysis/getAllAnalysisSlice";
-import { default as createAnalysis } from "./analysis/createAnalysis";
+import { default as createAnalysisSlice } from "./analysis/createAnalysis";
 import { default as deleteAnalysis } from "./analysis/deleteAnalysis";
 import { default as analysisType } from "./analysis/analysisType";
 import { default as updateAnalysis } from "./analysis/updateAnalysis";
-import { default as getAnalysisByIdSlice } from "./analysis/getAllAnalysisSlice";
+import { default as getAnalysisByIdSlice } from "./analysis/getAnalysisByIdSlice";
+import { default as searchAnalysisSlice } from "./analysis/searchAnalysisSlice";
+import { default as updateAnalysisSlice } from "./analysis/updateAnalysisSlice";
+import { default as getAnalysisbyTypePurposeSlice } from "./analysis/getAnalysisbyTypePurposeSlice";
+import { default as getAnalysisbyTypeResolutionSlice } from "./analysis/getAnalysisbyTypeResolutionSlice";
 
 
 export {
@@ -52,9 +56,13 @@ export {
   getChatBot,
   getDashboardDataListing,
   getAllAnalysisSlice,
-  createAnalysis,
+  createAnalysisSlice,
   deleteAnalysis,
   analysisType,
   updateAnalysis,
-  getAnalysisByIdSlice
+  getAnalysisByIdSlice,
+  searchAnalysisSlice,
+  updateAnalysisSlice,
+  getAnalysisbyTypePurposeSlice,
+  getAnalysisbyTypeResolutionSlice,
 };

@@ -18,6 +18,8 @@ import { getAllManagersAction } from "../../redux/slice/forForms/getAllManagersS
 import { updateTicketAction } from "../../redux/slice/tickets/updateTicketSlice";
 import { answerTicketAction } from "../../redux/slice/tickets/answerTaskSlice";
 import { getAllAgentsAction } from "../../redux/slice/forForms/getAllAgentsSlice";
+import { getAnalysisByTypePurposeAPI } from "../../redux/slice/analysis/getAnalysisbyTypePurposeSlice";
+import { getAnalysisByTypeResolutionAPI } from "../../redux/slice/analysis/getAnalysisbyTypeResolutionSlice";
 
 const AddUserForm = ({ onClose, disable, type }) => {
   const [success, setSuccess] = useState(false);
@@ -34,13 +36,15 @@ const AddUserForm = ({ onClose, disable, type }) => {
     agentId: "" || getId("ROLE_AGENT"),
     status: type === "add" ? "0" : "",
     roleType: "",
+    analysisType: "",
+    resolution: "",
+    purpose: "",
   };
   const [userValues, setUserValues] = useState(initialValues);
 
   const dispatch = useDispatch();
   const addUser = useSelector((state) => state.addTicket);
   const userById = useSelector((state) => state.ticketsById);
-  console.log("pp",userById);
   const updateProfile = useSelector((state) => state.updateProfile);
   const updateUser = useSelector((state) => state.updateTicket);
   const allTeams = useSelector((state) => state.allTeams);
@@ -48,6 +52,25 @@ const AddUserForm = ({ onClose, disable, type }) => {
   const TLs = useSelector((state) => state.TLs);
   const allAgents = useSelector((state) => state.allAgents);
   const userByToken = useSelector((state) => state.userByToken);
+
+  // Analysis state in write code Arshad Pathaan
+  const [analysisPurpose, setAnalysisPurpose] = useState([]);
+  const getAnalysisByTypePurpose = useSelector(
+    (state) =>
+      state.getAnalysisByTypePurpose.getAnalysisByTypePurposeData
+        .analysisType2Data
+  );
+  const getAnalysisByTypeResolution = useSelector(
+    (state) =>
+      state.getAnalysisByTypeResolution.getAnalysisByTypeResolutionData
+        .analysisType1Data
+  );
+  console.log(getAnalysisByTypeResolution);
+
+  useEffect(() => {
+    dispatch(getAnalysisByTypePurposeAPI());
+    dispatch(getAnalysisByTypeResolutionAPI());
+  }, []);
 
   useEffect(() => {
     if (userById.success) {
@@ -83,7 +106,14 @@ const AddUserForm = ({ onClose, disable, type }) => {
     }
   }, [updateUser.success]);
 
-  const {handleChange,handleBlur,values,errors,touched,handleSubmit,setFieldValue,
+  const {
+    handleChange,
+    handleBlur,
+    values,
+    errors,
+    touched,
+    handleSubmit,
+    setFieldValue,
   } = useFormik({
     initialValues: userValues,
     validationSchema: addTicketSchema,
@@ -107,6 +137,10 @@ const AddUserForm = ({ onClose, disable, type }) => {
       setRouteFlag(true);
     },
   });
+
+  // useEffect(() => {
+  //   dispatch(getAnalysisByTypePurposeAPI())
+  // }, []);
 
   useEffect(() => {
     dispatch(getAllTeamsAction());
@@ -387,24 +421,98 @@ const AddUserForm = ({ onClose, disable, type }) => {
               </div>
 
               {type === "update" && (
-              <div className=" col-md-12 mb-2 ">
+                <div className=" col-md-12 mb-2 ">
+                  <label>
+                    {" "}
+                    Status<span>*</span>
+                  </label>
+                  <select
+                    name="status"
+                    class="input-control"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.status}
+                  >
+                    <option value="">Select Status</option>
+                    <option value="2">Close</option>
+                    <option value="1">Open</option>
+                    <option value="0">Pending</option>
+                  </select>
+                </div>
+              )}
+
+              <div className="col-md-6 mb-2">
                 <label>
-                  {" "}
-                  Status<span>*</span>
+                  Analytics Type<span>*</span>
                 </label>
-                <select 
-                  name="status"
-                  class="input-control"   
+                <select
+                  className="input-control"
+                  name="analysisType"
                   onChange={handleChange}
+                  // onChange={(e) => {
+                  //   handleChange(e);
+                  //   // setFieldValue("resolution", "purpose"); // Reset the second dropdown value
+                  // }}
                   onBlur={handleBlur}
-                  value={values?.status}
+                  value={values.analysisType}
+                  // disabled={type === "view" || disable}
                 >
-                  <option value="">Select Status</option>
-                  <option value="2">Close</option>
-                  <option value="1">Open</option>
-                  <option value="0">Pending</option>
+                  <option value="" defaultValue hidden>
+                    Select Analytics Type
+                  </option>
+
+                  <option value="1">Resolution</option>
+                  <option value="2">Purpose</option>
                 </select>
+                {showError(errors.analysisType, touched.analysisType)}
               </div>
+              {values.analysisType === "2" && (
+                <>
+                  <div className="col-md-6 mb-2">
+                    <label>
+                      Purpose Type<span>*</span>
+                    </label>
+                    <select
+                      className="input-control"
+                      name="purpose"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.purpose}
+                    >
+                      {getAnalysisByTypePurpose?.map((item) => {
+                        return (
+                          <>
+                            <option value={item.id}>{item.name}</option>
+                          </>
+                        );
+                      })}
+                    </select>
+                  </div>
+                </>
+              )}
+              {values.analysisType === "1" && (
+                <>
+                  <div className="col-md-6 mb-2">
+                    <label>
+                      Resolution Type<span>*</span>
+                    </label>
+                    <select
+                      className="input-control"
+                      name="resolution"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.resolution}
+                    >
+                      {getAnalysisByTypeResolution?.map((item) => {
+                        return (
+                          <>
+                            <option value={item.id}>{item.name}</option>
+                          </>
+                        );
+                      })}
+                    </select>
+                  </div>
+                </>
               )}
             </div>
           </div>

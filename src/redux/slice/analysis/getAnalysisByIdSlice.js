@@ -1,14 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
 
-export const getAnalysisByIdAction = createAsyncThunk("getAnalysisByIdAction", async (id) => {
+export const getAnalysisByIdAction = createAsyncThunk("getAnalysisById", async (id) => {
   return await makeApiRequest(`/api/analysis/get-all-data-by-id?analysisId=${id}`, {
     apiKey:" eyJhbGciOiJIUzI1NiJ9.YXBpLXN1Y2Nlc3M.kclBgA_U9lm5u310ol90mAiN0cVYhqPyaRcqStCWWtA",
+    // token: getToken(),
+    
   });
 });
 
 const initialState = {
-  user: {},
+  analysisData: {},
   loading: false,
   error: "",
   message: "",
@@ -27,8 +29,8 @@ const getAnalysisByIdSlice = createSlice({
         state.success = false;
       })
       .addCase(getAnalysisByIdAction.fulfilled, (state, { payload }) => {
-        console.log("view anad",payload);
-        state.user = payload;
+        console.log("Analy ID",payload);
+        state.analysisData = payload;
         state.loading = false;
         state.success = true;
         state.error = "";

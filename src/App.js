@@ -36,7 +36,7 @@ import Mettings from "./pages/chatbot/Mettings";
 import Createmetting from "./pages/chatbot/Createmetting";
 import Messaging from "./pages/chatbot/Components/Messaging";
 import NoChatSelected from "./pages/chatbot/Components/NoChatSelected";
-import Analysis from "./pages/analysis/Analysis";
+import Analytics from "./pages/analysis/Analysis";
 
 function App() {
   const windowSize = useWindowSize();
@@ -73,7 +73,7 @@ function App() {
               <Route path="/ticketing" element={<Tickets />} />
 
               <Route path="/ai" element={<AI />} />
-            <Route path="/analytics" element={<Analysis />} />
+            <Route path="/analytics" element={<Analytics />} />
             </Route>
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/chatuser" element={<Chatuser />} />

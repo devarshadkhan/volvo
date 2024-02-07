@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
 
 export const editUpdateAnalysis = createAsyncThunk(
-  "getAllAnalysisData",
+  "updateAnalysis",
   async ({id, data}) => {
     return await makeApiRequest(`/api/analysis/update?analysisId=${id}`, {
       token: getToken(),
@@ -13,7 +13,7 @@ export const editUpdateAnalysis = createAsyncThunk(
 );
 
 const initialState = {
-  data: {},
+  analysisData: {},
   loading: false,
   error: "",
   message: "",
@@ -21,7 +21,7 @@ const initialState = {
 };
 
 const updateAnalysis = createSlice({
-  name: "createAnalysis",
+  name: "updateAnalysis",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -31,12 +31,13 @@ const updateAnalysis = createSlice({
         state.error = "";
         state.success = false;
       })
-      .addCase(editUpdateAnalysis.fulfilled, (state, { payload }) => {
-        // console.log("UPPDATEAPI", payload);  
+      .addCase(editUpdateAnalysis.fulfilled, (state, { payload, success }) => {
+        console.log("UPPDATEAPI", payload);  
         state.data = payload;
         state.loading = false;
         state.success = true;
         state.error = "";
+        // notify(success.message, "success");
         state.message = payload.message;
       })
       .addCase(editUpdateAnalysis.rejected, (state, { error }) => {

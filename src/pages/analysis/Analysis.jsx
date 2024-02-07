@@ -6,9 +6,7 @@ import AddAnalysis from "./AddAnalysis.jsx";
 import { useLocation, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAnalysisDataListing } from "../../redux/slice/analysis/getAllAnalysisSlice.js";
-import {
-  convertDateFormat,
-} from "../../utils/utils.js";
+import { convertDateFormat, showError } from "../../utils/utils.js";
 import Pagination from "../../components/commonUI/Pagination.js";
 import AnswerModal from "../ticketing/AnswerModal.jsx";
 import Confirm from "../../components/commonUI/Confirm.js";
@@ -16,7 +14,12 @@ import { deleteAnalysisData } from "../../redux/slice/analysis/deleteAnalysis.js
 import { editUpdateAnalysis } from "../../redux/slice/analysis/updateAnalysis.js";
 import { getAnalysisByIdAction } from "../../redux/slice/analysis/getAnalysisByIdSlice.js";
 import { createAnalysisData } from "../../redux/slice/analysis/createAnalysis.js";
+import { useFormik } from "formik";
+import { searchAnalysisAction } from "../../redux/slice/analysis/searchAnalysisSlice.js";
+import * as yup from "yup";
+import { updateAnalysisStatus } from "../../redux/slice/analysis/updateAnalysisSlice.js";
 const Analysis = () => {
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [editModalData, setEditModalData] = useState(false);
   const [viewModalData, setViewModalData] = useState(false);
@@ -24,120 +27,167 @@ const Analysis = () => {
   const [deleteUserId, setDeleteUserId] = useState();
   const [pageNumber, setPageNumber] = useState(0);
   const [analysisList, setAnalysisList] = useState([]);
-  // console.log("analysisList",analysisList);
-  const dispatch = useDispatch();
-  const fetchAnalysisData = useSelector(
-    (state) => state.getAnalysis.analysisData
-  );
-
-  // console.log(fetchAnalysisData.analysisData);
+  const deleteAnalysis = useSelector((s) => s.deleteAnalysis);
+  const createAnalysis = useSelector((s) => s.createAnalysis);
+  const searchAnalysis = useSelector((s) => s.getsearchAnalysis);
+  const AnalysisAll = useSelector((s) => s.getAnalysis);
+  const updateAnalysis = useSelector((s) => s.updateAnalysis);
   const startSerialNumber = pageNumber * 20 + 1;
 
-  // useEffect(() => {
-  //   setAnalysisList(fetchAnalysisData.analysisData);
-  // }, [fetchAnalysisData.analysisData]);
+  const validationSchema = yup.object({
+    searchKey: yup.string(),
+    name: yup.string(),
+    analysisType: yup.string(),
+  });
+
+  // yeh search karne per api call hogi 
   useEffect(() => {
-    dispatch(getAnalysisDataListing(pageNumber));
-  }, [pageNumber]);
+    if (values.searchValue || values.status || values.userType) {
+      dispatch(searchAnalysisAction({ ...values }));
+    } else {
+      setTimeout(() => {
+        dispatch(getAnalysisDataListing(pageNumber));
+      }, 300);
+    }
+  }, [
+    pageNumber,
+    deleteAnalysis.success,
+    createAnalysis.success,
+    updateAnalysis.success,
+  ]);
+  // setting searched User
+
+  // isme ham redux se data nikal kar rahe hai
+  useEffect(() => {
+    setAnalysisList(AnalysisAll.analysisData);
+  }, [AnalysisAll.success, AnalysisAll.analysisData]);
+
+  // Data search karne per 
+  useEffect(() => {
+    searchAnalysis?.success && setAnalysisList(searchAnalysis.analysisData);
+  }, [searchAnalysis?.success]);
+
+  // Analytisc status change notification type
+
+  const handleStatusChange = (value,id)=>{
+     if(value, id){
+      dispatch(updateAnalysisStatus({data:{status:value}, id}))
+     }
+  } 
 
 
-  const userById = useSelector((state) => state.getAnalysisById);
-  console.log("userByIduserById",userById);
- 
-  // useEffect(() => {
-  //   dispatch(getAnalysisByIdAction(userById.id));
-  // }, [userById.id, dispatch]);
+  const initialValues = {
+    searchKey: "",
+    name: "",
+    analysisType: "",
+  };
+
+  // handling Search
+  const { handleChange, handleSubmit, values, resetForm, errors, touched } =
+    useFormik({
+      initialValues,
+      validationSchema: validationSchema,
+      onSubmit: (data) => {
+        // console.log("DATA",data);
+        let searchData;
+        if (!data.searchKey && !data.name && !data.analysisType) {
+          searchData = initialValues;
+        } else {
+          searchData = data;
+        }
+        dispatch(searchAnalysisAction({ ...data }));
+      },
+    });
+
   const TableDataListing = () => {
     return (
       <>
-        {fetchAnalysisData.analysisData?.map((item, i) => {
-          const serialNumber = (startSerialNumber + i)
-            .toString()
-            .padStart(2, "0");
-          return (
-            <>
-              <tr key={i}>
-                <td data-label="S.No">{serialNumber}</td>
-                <td data-label="Name">{item.name}</td>
-                <td data-label="Analytics Type">{item.analysisType} </td>
-                <td data-label="Status">
-                  <Switch
-                    // handleChange={handleChange}
-                    switchValue={item.status}
-                    switchId={item.id}
-                  />
-                </td>
-                <td data-label="Created Date">
-                  {convertDateFormat(item.createdAt)}
-                </td>
+        {analysisList?.analysisData?.length === 0 ? (
+          <>
+            {" "}
+            <tr>
+              <td colSpan={"9"} align="center">
+                <h2 className="mt-5 mb-5"> No User Found!</h2>
+              </td>
+            </tr>
+          </>
+        ) : (
+          <>
+            {analysisList?.analysisData?.map((item, i) => {
+              const serialNumber = (startSerialNumber + i)
+                .toString()
+                .padStart(2, "0");
+              return (
+                <>
+                  <tr key={item.id}>
+                    <td data-label="S.No">{serialNumber}</td>
+                    <td data-label="Name">{item.name}</td>
+                    <td data-label="Analytics Type">{item.analysisType} </td>
+                    <td data-label="Status">
+                      <Switch
+                       handleChange={handleStatusChange}
+                        switchValue={item.status}
+                        switchId={item.id}
+                      />
+            
+                    </td>
+                    <td data-label="Created Date">
+                      {convertDateFormat(item.createdAt)}
+                    </td>
 
-                <td >
-                  <button
-                    className=" btn-small greenbg"
-                    type="button"
-                    onClick={() => {
-                      setEditModalData(item.id);
-                      dispatch(getAnalysisByIdAction(item.id))
-                      // dispatch(getAnalysisByIdAction(item.id))
-                    }}
-                  >
-                    <img
-                      src={`${process.env.PUBLIC_URL}/icons-images/edit-small.svg`}
-                      alt="icon"
-                    />
-                  </button>
+                    <td>
+                      <button
+                        className=" btn-small greenbg"
+                        type="button"
+                        onClick={() => {
+                          setEditModalData(item.id);
+                          dispatch(getAnalysisByIdAction(item.id));
+                          // dispatch(getAnalysisByIdAction(item.id))
+                        }}
+                      >
+                        <img
+                          src={`${process.env.PUBLIC_URL}/icons-images/edit-small.svg`}
+                          alt="icon"
+                        />
+                      </button>
 
-                  <button
-                    className=" btn-small yellowbg"
-                    onClick={() => {
-                      setViewModalData(true)
-                      dispatch(getAnalysisByIdAction(item.id))
-                      // getAnalysisByIdAction(item.id)
-                    }}
-                  >
-                    <img
-                      src={`${process.env.PUBLIC_URL}/icons-images/view-small.svg`}
-                      alt="icon"
-                    />
-                  </button>
-                  <button
-                    className=" btn-small redbg"
-                    type="submit"
-                    onClick={() => {
-                      setShowConfirm(true);
-                      setDeleteUserId(item.id);
-                      // handleDel(item.id);
-                    }}
-                  >
-                    <img
-                      src={`${process.env.PUBLIC_URL}/icons-images/delete-small.svg`}
-                      alt="icon"
-                    />
-                  </button>
-                </td>
-              </tr>
-            </>
-          );
-        })}
+                      <button
+                        className=" btn-small yellowbg"
+                        onClick={() => {
+                          setViewModalData(true);
+                          dispatch(getAnalysisByIdAction(item.id));
+                          // getAnalysisByIdAction(item.id)
+                        }}
+                      >
+                        <img
+                          src={`${process.env.PUBLIC_URL}/icons-images/view-small.svg`}
+                          alt="icon"
+                        />
+                      </button>
+                      <button
+                        className=" btn-small redbg"
+                        type="submit"
+                        onClick={() => {
+                          setShowConfirm(true);
+                          setDeleteUserId(item.id);
+                          // handleDel(item.id);
+                        }}
+                      >
+                        <img
+                          src={`${process.env.PUBLIC_URL}/icons-images/delete-small.svg`}
+                          alt="icon"
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                </>
+              );
+            })}
+          </>
+        )}
       </>
     );
   };
-
-  // const handleAddAnalysis = async (values) => {
-  //   // Dispatch action to add analysis data
-  //   await dispatch(createAnalysisData(values));
-
-  //   // Manually update the state with the new data
-  //   setAnalysisList((prevAnalysisList) => [
-  //     ...prevAnalysisList,
-  //     fetchAnalysisData.analysisData, // Assuming `analysisData` is an array
-  //   ]);
-
-  //   // Close the modal
-  //   setIsOpen(false);
-
-    
-  // };
 
   return (
     <>
@@ -148,80 +198,58 @@ const Analysis = () => {
           </div>
 
           {/* <form onSubmit={handleSubmit}> */}
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="row mar-20">
               <div className=" col-lg-3 ">
                 <div className="form-group ">
                   <input
                     type="text"
                     className="input-control"
-                    name="searchValue"
                     placeholder="Search by Name/Email/Mobile Number"
+                    onChange={handleChange}
+                    value={values.name}
+                    name="name"
                   />
                 </div>
+                {showError(errors.name, touched.name)}
               </div>
 
-              {/* <div className=" col-lg-3 ">
-                <div className="form-group ">
-                  <select className="input-control" name="userType">
-                    {" "}
-                    <option value="" selected>
-                      Select Role
-                    </option>
-                    <option value="user">User</option>
-                    <option value="associate">Associate</option>
-                    <option value="team Lead">Team Lead</option>
-                    <option value="QA">QA</option>
-                    <option value="manager">Manager</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-              </div> */}
               <div className=" col-lg-2">
                 <div className="form-group ">
-                  <select className="input-control" name="status">
+                  <select
+                    className="input-control"
+                    onChange={handleChange}
+                    value={values.analysisType}
+                    name="analysisType"
+                  >
                     {" "}
                     <option value="" selected>
                       Analysis Type
                     </option>
-                    <option value="0">Resolution</option>
-                    <option value="1">Purpose</option>
+                    <option value="1">Resolution</option>
+                    <option value="2">Purpose</option>
                   </select>
                 </div>
+                {showError(errors.analysisType, touched.analysisType)}
               </div>
-
-              <div className=" col-lg-2">
-                <div className="form-group ">
-                  <select className="input-control" name="status">
-                    {" "}
-                    <option value="" selected>
-                      Select Status
-                    </option>
-                    <option value="0">Inactive</option>
-                    <option value="1">Active</option>
-                  </select>
-                </div>
-              </div>
+          
 
               <div className=" col-lg-2 col-5">
                 <div className="form-group ">
                   <button className=" btn-md btn-md-blue" type="submit">
                     <i className="fa-solid fa-magnifying-glass"></i>
                   </button>
-                  <button className=" btn-md btn-md-blue" type="button">
+                  <button className=" btn-md btn-md-blue" type="button"    onClick={() => {
+                        dispatch(getAnalysisDataListing(pageNumber));
+                        resetForm();
+                        setPageNumber(0);
+                      }}>
                     <i className="fa-solid fa-rotate-right"></i>
                   </button>
                 </div>
               </div>
               <div className=" col-lg-2 col-7">
                 <div className="aling-right bflex">
-                  {/* <button className=" btn-md btn-md-blue" type="button">
-                    <i
-                      class="fa-solid fa-file-csv"
-                      style={{ fontSize: "21px" }}
-                    ></i>
-                  </button> */}
-
                   <button
                     to="/doctors/add-doctor"
                     className=" btn-md btn-md-blue"
@@ -269,11 +297,11 @@ const Analysis = () => {
                 <i class="fa-solid fa-chevron-down"></i>
               </button> */}
               <Pagination
-                totalPages={fetchAnalysisData?.totalPages}
+                totalPages={analysisList?.totalPages}
                 pageNumber={pageNumber}
                 setPageNumber={setPageNumber}
-                totalItems={fetchAnalysisData?.totalItems}
-                items={fetchAnalysisData?.totalItems}
+                totalItems={analysisList?.totalItems}
+                items={analysisList?.totalItems}
               />
             </div>
           </div>
@@ -281,15 +309,13 @@ const Analysis = () => {
       </div>
 
       {/* form Modal Open for Added, Edited, and Delete full CRUD operation */}
-        <AddAnalysis
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
-          setIsOpen={setIsOpen}
-          title="Add User"
-          type="add"
-          // onAdd={handleAddAnalysis}
-          // analysisId={editModalDatxa}
-        />
+      <AddAnalysis
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        setIsOpen={setIsOpen}
+        title="Add User"
+        type="add"
+      />
       <AddAnalysis
         isOpen={editModalData !== false}
         onClose={() => setEditModalData(false)}
@@ -305,7 +331,6 @@ const Analysis = () => {
         title="View Details"
         type="view"
         disabled={true}
-        initialData={userById.analysisData}
       />
 
       <Confirm

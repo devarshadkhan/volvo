@@ -31,7 +31,6 @@ const   Users = () => {
   const users = useSelector((s) => s.users);
   const deleteUser = useSelector((s) => s.deleteUser);
   const addUser = useSelector((s) => s.addUser);
-  // console.log("qwwqwqw",addUser);
   const userStatus = useSelector((s) => s.userStatus);
   const roles = useSelector((s) => s.roles);
   const searchUser = useSelector((s) => s.searchUser);
@@ -52,7 +51,7 @@ const   Users = () => {
 
   useEffect(() => {
     if (values.searchValue || values.status || values.userType) {
-      dispatch(searchUserAction({ ...values, pageNumber }));
+      dispatch(searchUserAction({ ...values  }));
     } else {
       setTimeout(() => {
         dispatch(getAllUsersAction(pageNumber));
@@ -66,19 +65,17 @@ const   Users = () => {
     updateUser.success,
   ]);
 
- 
+  const initialValues = {
+    searchValue: "",
+    status: "",
+    userType: "",
+  };
 
   const handleStatusChange = (value, id) => {
     console.log("VALUE_______ID",value, id);
     dispatch(userStatusAction({ data: { status: value }, id }));
   };
 
-
- const initialValues = {
-    searchValue: "",
-    status: "",
-    userType: "",
-  };
   // handling CSV
   useEffect(() => {
     if (searchCSVUsers.success && forCSV) {
@@ -126,7 +123,6 @@ const   Users = () => {
         }
       },
     });
-
   // console.log(usersList);
   // seriel Number for pagination
   const startSerialNumber = pageNumber * 20 + 1;

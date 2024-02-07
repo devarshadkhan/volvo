@@ -283,6 +283,8 @@ export function addTicketSchema() {
       teamId: Yup.string().required("Please select a team"),
       managerId: Yup.string().required("Please select a manager"),
       status: Yup.string().required("Please select status"),
+      analysisType: Yup.string().required("Please select   analysisType"),
+    
     });
   } else if (role === "ROLE_MANAGER") {
     return Yup.object().shape({

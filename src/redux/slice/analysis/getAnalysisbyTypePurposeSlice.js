@@ -1,13 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
 
-export const deleteAnalysisData = createAsyncThunk(
-  "deleteAnalysis",
-  async (delID) => {
+export const getAnalysisByTypePurposeAPI = createAsyncThunk(
+  "getAnalysisByTypePurpose",
+  async (id) => {
     return await makeApiRequest(
-      `/api/analysis/delete-by-id?analysisId=${delID}`,
+      `/api/analysis/get-data-by-analysistype-purpose`,
       {
-        method: "DELETE",
         token: getToken(),
       }
     );
@@ -15,33 +14,33 @@ export const deleteAnalysisData = createAsyncThunk(
 );
 
 const initialState = {
-  analysisData: {},
+  getAnalysisByTypePurposeData: [],
   loading: false,
   error: "",
   message: "",
   success: false,
 };
 
-const deleteAnalysis = createSlice({
-  name: "deleteAnalysis",
+const getAnalysisbyTypePurposeSlice = createSlice({
+  name: "getAnalysisByTypePurpose",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(deleteAnalysisData.pending, (state) => {
+      .addCase(getAnalysisByTypePurposeAPI.pending, (state) => {
         state.loading = true;
         state.error = "";
         state.success = false;
       })
-      .addCase(deleteAnalysisData.fulfilled, (state, { payload }) => {
-        // console.log(payload);
-        state.data = payload;
+      .addCase(getAnalysisByTypePurposeAPI.fulfilled, (state, { payload }) => {
+        console.log("Analy ID", payload);
+        state.getAnalysisByTypePurposeData = payload;
         state.loading = false;
         state.success = true;
         state.error = "";
         state.message = payload.message;
       })
-      .addCase(deleteAnalysisData.rejected, (state, { error }) => {
+      .addCase(getAnalysisByTypePurposeAPI.rejected, (state, { error }) => {
         state.loading = false;
         state.error = error.message;
         state.success = false;
@@ -52,4 +51,4 @@ const deleteAnalysis = createSlice({
   },
 });
 
-export default deleteAnalysis.reducer;
+export default getAnalysisbyTypePurposeSlice.reducer;

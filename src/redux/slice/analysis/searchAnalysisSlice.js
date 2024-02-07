@@ -1,13 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
 
-export const deleteAnalysisData = createAsyncThunk(
-  "deleteAnalysis",
-  async (delID) => {
+export const searchAnalysisAction = createAsyncThunk(
+  "searchAnalysis",
+  async ({ searchKey,analysisType,name }) => {
     return await makeApiRequest(
-      `/api/analysis/delete-by-id?analysisId=${delID}`,
+      `/api/analysis/search?&searchKey=${searchKey}&name=${name}&analysisType=${analysisType}`,
       {
-        method: "DELETE",
         token: getToken(),
       }
     );
@@ -15,33 +14,32 @@ export const deleteAnalysisData = createAsyncThunk(
 );
 
 const initialState = {
-  analysisData: {},
+    analysisData: [],
   loading: false,
   error: "",
   message: "",
   success: false,
 };
 
-const deleteAnalysis = createSlice({
-  name: "deleteAnalysis",
+const searchAnalysisSlice = createSlice({
+  name: "searchAnalysis",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(deleteAnalysisData.pending, (state) => {
+      .addCase(searchAnalysisAction.pending, (state) => {
         state.loading = true;
         state.error = "";
         state.success = false;
       })
-      .addCase(deleteAnalysisData.fulfilled, (state, { payload }) => {
-        // console.log(payload);
-        state.data = payload;
+      .addCase(searchAnalysisAction.fulfilled, (state, { payload }) => {
+        state.analysisData = payload;
         state.loading = false;
         state.success = true;
         state.error = "";
         state.message = payload.message;
       })
-      .addCase(deleteAnalysisData.rejected, (state, { error }) => {
+      .addCase(searchAnalysisAction.rejected, (state, { error }) => {
         state.loading = false;
         state.error = error.message;
         state.success = false;
@@ -52,4 +50,4 @@ const deleteAnalysis = createSlice({
   },
 });
 
-export default deleteAnalysis.reducer;
+export default searchAnalysisSlice.reducer;

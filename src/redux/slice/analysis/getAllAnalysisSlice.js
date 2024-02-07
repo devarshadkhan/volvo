@@ -2,10 +2,10 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
 
 export const getAnalysisDataListing = createAsyncThunk(
-  "getAllAnalysisData",
+  "getAnalysis",
   async (params) => {
     return await makeApiRequest(
-      `/api/analysis/get-all-data?page=${params}`,
+      `/api/analysis/get-all-data?page=${params || 0}`,
       {
         token: getToken(),
       }
@@ -14,7 +14,7 @@ export const getAnalysisDataListing = createAsyncThunk(
 );
 
 const initialState = {
-    analysisData: [],
+  analysisData: [],
   loading: false,
   error: "",
   message: "",
@@ -22,7 +22,7 @@ const initialState = {
 };
 
 const getAllAnalysisSlice = createSlice({
-  name: "getDashboardData",
+  name: "getAnalysis",
   initialState,
   reducers: {},
   extraReducers: (builder) => {

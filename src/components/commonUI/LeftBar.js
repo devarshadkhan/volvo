@@ -6,7 +6,7 @@ import { getMenuAction } from "../../redux/slice/menu/getMenuSlice";
 const LeftBar = ({ toggleMenu }) => {
   const dispatch = useDispatch();
   const params = useLocation()
-  // console.log("qq",params.pathname);
+  console.log("qq",params.pathname);
   const menu = useSelector((state) => state.menu);
   const [activeSubMenu, setActiveSubMenu] = useState();
 

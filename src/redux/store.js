@@ -32,11 +32,15 @@ import {
   getChatBot,
   getDashboardDataListing,
   getAllAnalysisSlice,
-  createAnalysis,
   deleteAnalysis,
   analysisType,
   updateAnalysis,
   getAnalysisByIdSlice,
+  searchAnalysisSlice,
+  createAnalysisSlice,
+  updateAnalysisSlice,
+  getAnalysisbyTypePurposeSlice,
+  getAnalysisbyTypeResolutionSlice,
 } from "./slice";
 import getAllTeamsFormSlice from "./slice/forForms/getAllTeamsFormSlice";
 import getAllManagersSlice from "./slice/forForms/getAllManagersSlice";
@@ -109,10 +113,14 @@ export const store = configureStore({
 
     // Analysis
     getAnalysis:getAllAnalysisSlice,
-    createAnalysis:createAnalysis,
+    createAnalysis:createAnalysisSlice,
     deleteAnalysis:deleteAnalysis,
     analysisType:analysisType,
     updateAnalysis:updateAnalysis,
-    getAnalysisById:getAnalysisByIdSlice
+    getAnalysisById:getAnalysisByIdSlice,
+    getsearchAnalysis:searchAnalysisSlice,
+    handleUpdateStatus:updateAnalysisSlice,
+    getAnalysisByTypePurpose:getAnalysisbyTypePurposeSlice,
+    getAnalysisByTypeResolution:getAnalysisbyTypeResolutionSlice
   },
 });

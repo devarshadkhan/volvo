@@ -13,7 +13,7 @@ const Dashboard = () => {
    */
   const dispatch = useDispatch()
   const getDataList = useSelector((item)=> item)
-    // console.log(getDataList);
+    console.log(getDataList);
   // lets fetch data within one variable
   
   const fetchData = getDataList.getDashboardDataListing.tickets 

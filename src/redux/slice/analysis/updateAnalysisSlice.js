@@ -1,47 +1,46 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
 
-export const deleteAnalysisData = createAsyncThunk(
-  "deleteAnalysis",
-  async (delID) => {
-    return await makeApiRequest(
-      `/api/analysis/delete-by-id?analysisId=${delID}`,
-      {
-        method: "DELETE",
-        token: getToken(),
-      }
-    );
+export const updateAnalysisStatus = createAsyncThunk(
+  "updateAnalysis",
+  async ({ id, data }) => {
+    return await makeApiRequest(`/api/analysis/update-status-by-id?analysisId=${id}`, {
+      token: getToken(),
+      data,
+      method: "PATCH",
+    });
   }
 );
 
 const initialState = {
-  analysisData: {},
+analysisData: {},
   loading: false,
   error: "",
   message: "",
   success: false,
 };
 
-const deleteAnalysis = createSlice({
-  name: "deleteAnalysis",
+const updateAnalysisSlice = createSlice({
+  name: "updateAnalysis",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(deleteAnalysisData.pending, (state) => {
+      .addCase(updateAnalysisStatus.pending, (state) => {
         state.loading = true;
         state.error = "";
         state.success = false;
       })
-      .addCase(deleteAnalysisData.fulfilled, (state, { payload }) => {
-        // console.log(payload);
-        state.data = payload;
+      .addCase(updateAnalysisStatus.fulfilled, (state, { payload }) => {
+        console.log("UUUPPDATE  UUSSEERR",payload);
+        state.user = payload;
         state.loading = false;
         state.success = true;
         state.error = "";
         state.message = payload.message;
+        notify(payload.message);
       })
-      .addCase(deleteAnalysisData.rejected, (state, { error }) => {
+      .addCase(updateAnalysisStatus.rejected, (state, { error }) => {
         state.loading = false;
         state.error = error.message;
         state.success = false;
@@ -52,4 +51,4 @@ const deleteAnalysis = createSlice({
   },
 });
 
-export default deleteAnalysis.reducer;
+export default updateAnalysisSlice.reducer;
