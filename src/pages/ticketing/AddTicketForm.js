@@ -21,7 +21,8 @@ import { getAllAgentsAction } from "../../redux/slice/forForms/getAllAgentsSlice
 import { getAnalysisByTypePurposeAPI } from "../../redux/slice/analysis/getAnalysisbyTypePurposeSlice";
 import { getAnalysisByTypeResolutionAPI } from "../../redux/slice/analysis/getAnalysisbyTypeResolutionSlice";
 
-const AddUserForm = ({ onClose, disable, type }) => {
+const AddUserForm = ({ onClose, disable, type , ticketId}) => {
+  console.log("ticketIdticketId",ticketId);
   const [success, setSuccess] = useState(false);
   const [routeFlag, setRouteFlag] = useState(false);
   const isDisabled = type === "view" || type === "update";
@@ -37,14 +38,15 @@ const AddUserForm = ({ onClose, disable, type }) => {
     status: type === "add" ? "0" : "",
     roleType: "",
     analysisType: "",
-    resolution: "",
-    purpose: "",
+    analysisValue: "",
+    noOfDay: "",
   };
   const [userValues, setUserValues] = useState(initialValues);
 
   const dispatch = useDispatch();
   const addUser = useSelector((state) => state.addTicket);
   const userById = useSelector((state) => state.ticketsById);
+  console.log("wqwqwqwqwqwq",userById);
   const updateProfile = useSelector((state) => state.updateProfile);
   const updateUser = useSelector((state) => state.updateTicket);
   const allTeams = useSelector((state) => state.allTeams);
@@ -54,39 +56,89 @@ const AddUserForm = ({ onClose, disable, type }) => {
   const userByToken = useSelector((state) => state.userByToken);
 
   // Analysis state in write code Arshad Pathaan
-  const [analysisPurpose, setAnalysisPurpose] = useState([]);
   const getAnalysisByTypePurpose = useSelector(
     (state) =>
       state.getAnalysisByTypePurpose.getAnalysisByTypePurposeData
-        .analysisType2Data
+        .analysisPurpose
   );
   const getAnalysisByTypeResolution = useSelector(
     (state) =>
       state.getAnalysisByTypeResolution.getAnalysisByTypeResolutionData
-        .analysisType1Data
+        .analysisResolution
   );
-  console.log(getAnalysisByTypeResolution);
 
   useEffect(() => {
     dispatch(getAnalysisByTypePurposeAPI());
     dispatch(getAnalysisByTypeResolutionAPI());
   }, []);
 
+  // useEffect(() => {
+  //   if (userById.success) {
+  //     if (type === "add") {
+  //       setUserValues(initialValues);
+  //     } else {
+  //       setUserValues({
+  //         ...userById.user,
+  //         teamId: userById.user?.teamId,
+  //         managerId: userById.user?.managerId,
+  //         tlId: userById.user?.tlId,
+  //         analysisType: userById?.user?.analysisType,
+  //         analysisValue: userById?.user?.analysisValue,
+  //         noOfDay: userById.user.noOfDay,
+  //       });
+  //     }
+  //   }
+  // }, [userById?.success]);
+
   useEffect(() => {
-    if (userById.success) {
-      if (type === "add") {
-        setUserValues(initialValues);
-      } else {
+    if (type === "add") {
+      setUserValues(initialValues);
+    }
+    if (userById?.success) {
+      if (type === "reply") {
         setUserValues({
           ...userById.user,
           teamId: userById.user?.teamId,
           managerId: userById.user?.managerId,
           tlId: userById.user?.tlId,
-          agentId: userById.user.agentId,
+          analysisType: userById?.user?.analysisType,
+          analysisValue: userById?.user?.analysisValue,
+          noOfDay: userById.user.noOfDay,
+        });
+      } else if (type === "update" || type === "view") {
+        setUserValues({
+          ...userById.user,
+          teamId: userById.user?.teamId,
+          managerId: userById.user?.managerId,
+          tlId: userById.user?.tlId,
+          analysisType: userById?.user?.analysisType,
+          analysisValue: userById?.user?.analysisValue,
+          noOfDay: userById.user.noOfDay,
         });
       }
     }
-  }, [userById.success, getId]);
+  }, [userById?.success, ]);
+
+
+
+
+  // useEffect(() => {
+  //   if (userById.success) {
+  //     if (type === "add") {
+  //       setUserValues(initialValues);
+  //     } else {
+  //       setUserValues({
+  //         ...userById.user,
+  //         teamId: userById.user?.teamId,
+  //         managerId: userById.user?.managerId,
+  //         tlId: userById.user?.tlId,
+  //         analysisType: userById?.user?.analysisType,
+  //         analysisValue: userById?.user?.analysisValue,
+  //         noOfDay: userById.user.noOfDay,
+  //       });
+  //     }
+  //   }
+  // }, [userById.success, getId]);
 
   useEffect(() => {
     if (addUser.success && routeFlag) {
@@ -98,7 +150,7 @@ const AddUserForm = ({ onClose, disable, type }) => {
     if (updateProfile.success && routeFlag) {
       setSuccess(true);
     }
-  }, [updateProfile.success]);
+  }, [updateProfile.success,routeFlag]);
 
   useEffect(() => {
     if (updateUser.success && routeFlag) {
@@ -119,6 +171,7 @@ const AddUserForm = ({ onClose, disable, type }) => {
     validationSchema: addTicketSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
+      console.log("VVV", values);
       const newValues = {
         ...values,
         teamId: values.teamId || "",
@@ -126,6 +179,9 @@ const AddUserForm = ({ onClose, disable, type }) => {
         agentId: values.agentId || "",
         tlId: values.tlId || "",
         status: values.status,
+        analysisType: values.analysisType || "",
+        analysisValue: values.analysisValue || "",
+        noOfDay: values.noOfDay || "",
       };
       if (type === "add") {
         dispatch(addTicketAction(newValues));
@@ -134,9 +190,31 @@ const AddUserForm = ({ onClose, disable, type }) => {
       } else if (type === "answer") {
         dispatch(answerTicketAction(newValues));
       }
+
       setRouteFlag(true);
     },
   });
+
+  // const handleAnalysisTypeChange = (e) => {
+  //   handleChange(e);
+
+  //   // If the user changes the analysis type, reset the values of related fields
+  //   if (e.target.name === "analysisType") {
+  //     // setFieldValue("resolution", ""); // Reset Resolution dropdown
+  //     setFieldValue("analysisValue", "");    // Reset Purpose and analysisValue dropdown
+  //     setFieldValue("noOfDay", "");       // Reset Date input
+  //     // setFieldValue("time", "");       // Reset Time input
+  //   } else if (e.target.name === "purpose"){
+  //     // setFieldValue("resolution", ""); // Reset Resolution dropdown
+  //     setFieldValue("analysisValue", "");    // Reset Purpose and analysisValue dropdown
+  //     setFieldValue("noOfDay", "");       // Reset Date input
+  //     // setFieldValue("time", "");       // Reset Time input
+  //     // setFieldValue("resolution", ""); // Reset Resolution dropdown
+  //     // setFieldValue("purpose", "");    // Reset Purpose dropdown
+  //     // setFieldValue("date", "");       // Reset Date input
+  //     // setFieldValue("time", "");       // Reset Time input
+  //   }
+  // };
 
   // useEffect(() => {
   //   dispatch(getAnalysisByTypePurposeAPI())
@@ -441,6 +519,8 @@ const AddUserForm = ({ onClose, disable, type }) => {
                 </div>
               )}
 
+              
+
               <div className="col-md-6 mb-2">
                 <label>
                   Analytics Type<span>*</span>
@@ -449,24 +529,32 @@ const AddUserForm = ({ onClose, disable, type }) => {
                   className="input-control"
                   name="analysisType"
                   onChange={handleChange}
+                  // onChange={handleAnalysisTypeChange}
                   // onChange={(e) => {
                   //   handleChange(e);
-                  //   // setFieldValue("resolution", "purpose"); // Reset the second dropdown value
+                  //   setFieldValue("analysisType" === values.analysisType);
                   // }}
                   onBlur={handleBlur}
-                  value={values.analysisType}
+                  value={values?.analysisType || ""}
+                  // disabled={isDisabled}
                   // disabled={type === "view" || disable}
                 >
-                  <option value="" defaultValue hidden>
+                  <option value=""   >
                     Select Analytics Type
                   </option>
+{/* {values.analysisType === "Resolution" ? <> <option value={"1"} >Resolution</option></>:<> <option value={"2"} >Purpose</option></>} */}
 
-                  <option value="1">Resolution</option>
-                  <option value="2">Purpose</option>
+{/* { type === "add" && <><option value={"1"} >Resolution</option>
+                  <option value={"2"} >Purpose</option></>} */}
+                  {/* {type === "update" && <>
+                    {values.analysisType === "Resolution" ? <> <option value={"1"} >Resolution</option></>:<> <option value={"2"} >Purpose</option></>}
+                  </>} */}
+                  <option value={"1"} >Resolution</option>
+                  <option value={"2"} >Purpose</option>
                 </select>
                 {showError(errors.analysisType, touched.analysisType)}
               </div>
-              {values.analysisType === "2" && (
+              {values.analysisType === "2"  && (
                 <>
                   <div className="col-md-6 mb-2">
                     <label>
@@ -474,19 +562,56 @@ const AddUserForm = ({ onClose, disable, type }) => {
                     </label>
                     <select
                       className="input-control"
-                      name="purpose"
+                      name="analysisValue"
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={values.purpose}
+                      value={values?.analysisValue}
+                      // disabled={type === "view" || disable}
                     >
+                      <option value="" defaultValue hidden>
+                        Select Purpose Value
+                      </option>
                       {getAnalysisByTypePurpose?.map((item) => {
                         return (
                           <>
-                            <option value={item.id}>{item.name}</option>
+                            <option value={item.name}>{item.name}</option>
                           </>
                         );
                       })}
                     </select>
+                    {showError(errors.analysisValue, touched.analysisValue)}
+                  </div>
+                  {/* choose a data */}
+                  <div className=" col-md-6 ">
+                    <div className="form-group ">
+                      <label>
+                        Date<span>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className="input-control"
+                        onChange={handleChange}
+                        value={values.noOfDay}
+                        name="noOfDay"
+                      />
+                    </div>
+                    {showError(errors.noOfDay, touched.noOfDay)}
+                  </div>
+                  {/* choose a time */}
+                  <div className=" col-md-6 ">
+                    <div className="form-group ">
+                      <label>
+                        Time<span>*</span>
+                      </label>
+                      <input
+                        type="time"
+                        className="input-control"
+                        onChange={handleChange}
+                        value={values.noOfDay}
+                        name="noOfDay"
+                      />
+                    </div>
+                    {showError(errors.noOfDay, touched.noOfDay)}
                   </div>
                 </>
               )}
@@ -498,19 +623,58 @@ const AddUserForm = ({ onClose, disable, type }) => {
                     </label>
                     <select
                       className="input-control"
-                      name="resolution"
+                      name="analysisValue"
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={values.resolution}
+                      value={values.analysisValue}
+                      disabled={type === "view" || disable}
                     >
+                      <option value="" defaultValue hidden>
+                        Select Resolution Value
+                      </option>
                       {getAnalysisByTypeResolution?.map((item) => {
                         return (
                           <>
-                            <option value={item.id}>{item.name}</option>
+                            <option value={item.name}>{item.name}</option>
                           </>
                         );
                       })}
                     </select>
+                    {showError(errors.analysisValue, touched.analysisValue)}
+                  </div>
+                  {/* choose a data */}
+                  <div className=" col-md-6 ">
+                    <div className="form-group ">
+                      <label>
+                        Date<span>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className="input-control"
+                        placeholder="Search by Name/Email/Mobile Number"
+                        onChange={handleChange}
+                        value={values.noOfDay}
+                        name="noOfDay"
+                      />
+                    </div>
+                    {showError(errors.noOfDay, touched.noOfDay)}
+                  </div>
+                  {/* choose a time */}
+                  <div className=" col-md-6 ">
+                    <div className="form-group ">
+                      <label>
+                        Time<span>*</span>
+                      </label>
+                      <input
+                        type="time"
+                        className="input-control"
+                        placeholder="Search by Name/Email/Mobile Number"
+                        onChange={handleChange}
+                        value={values.noOfDay}
+                        name="noOfDay"
+                      />
+                    </div>
+                    {showError(errors.noOfDay, touched.noOfDay)}
                   </div>
                 </>
               )}

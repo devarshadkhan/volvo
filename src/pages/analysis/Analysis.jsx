@@ -107,7 +107,7 @@ const Analysis = () => {
             {" "}
             <tr>
               <td colSpan={"9"} align="center">
-                <h2 className="mt-5 mb-5"> No User Found!</h2>
+                <h2 className="mt-5 mb-5"> No Data Found!</h2>
               </td>
             </tr>
           </>

@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const getAnalysisType = createAsyncThunk(
   "analysisType",
   async (params) => {
-    return await makeApiRequest(`/api/analysis/type-of-analysis`, {
+    return await makeApiRequest(`${api.getAnalysisAllType}`, {
       token: getToken(),
     });
   }

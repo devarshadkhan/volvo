@@ -7,19 +7,35 @@ import { replySchema } from "../../utils/schema";
 import { answerTicketAction } from "../../redux/slice/tickets/answerTaskSlice";
 import TextEditor from "./TextEditor";
 import Select from "react-select";
+import { getAnalysisByTypePurposeAPI } from "../../redux/slice/analysis/getAnalysisbyTypePurposeSlice";
+import { getAnalysisByTypeResolutionAPI } from "../../redux/slice/analysis/getAnalysisbyTypeResolutionSlice";
 
 const ShowAnswer = ({ onClose, disable, type }) => {
   const [success, setSuccess] = useState(false);
   const [routeFlag, setRouteFlag] = useState(false);
   const [StatusVal,setStatus] = useState(false);
   const [taskAnswerError, setTaskAnswerError] = useState("");
-
+  const formatDate = (inputDate) => {
+    console.log("inputDate",inputDate);
+    const parts = inputDate.split('/');
+    // month is 0-based, so we need to subtract 1 from the month
+    const formattedDate = new Date(`${parts[2]}-${parts[0]}-${parts[1]}`);
+    const year = formattedDate.getFullYear();
+    const month = (formattedDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = formattedDate.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
+  
   const isDisabled = type === "view" || type === "update" || type === "reply";
 
   const initialValues = {
     ticketId: "",
     taskAnswer: "",
-    status:""
+    status:"",
+    analysisValue:"",
+    analysisType:"",
+    noOfDay:"",
   };
   const [userValues, setUserValues] = useState(initialValues);
 
@@ -135,6 +151,32 @@ const ShowAnswer = ({ onClose, disable, type }) => {
     ) : null;
   };
   const status = ["Pending", "Open", "Close"];
+
+
+
+
+
+
+
+
+
+
+    // Analysis state in write code Arshad Pathaan
+    const getAnalysisByTypePurpose = useSelector(
+      (state) =>
+        state.getAnalysisByTypePurpose.getAnalysisByTypePurposeData
+          .analysisPurpose
+    );
+    const getAnalysisByTypeResolution = useSelector(
+      (state) =>
+        state.getAnalysisByTypeResolution.getAnalysisByTypeResolutionData
+          .analysisResolution
+    );
+  
+    useEffect(() => {
+      dispatch(getAnalysisByTypePurposeAPI());
+      dispatch(getAnalysisByTypeResolutionAPI());
+    }, []);
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -211,6 +253,190 @@ const ShowAnswer = ({ onClose, disable, type }) => {
                   </div>
               </div>
            
+
+
+
+              <div className="col-md-6 mb-2">
+                <label>
+                  Analytics Type<span>*</span>
+                </label>
+                <select
+                  className="input-control"
+                  name="analysisType"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values?.analysisType}
+                  disabled
+                >
+                  {/* <option value="" >
+                    Select Analytics Type
+                  </option> */}
+                  {
+              values.analysisType === "Resolution" ? <> <option value={"1"} >Resolution</option></>:<> <option value={"2"} >Purpose</option></>
+             }
+                 
+                 
+                </select>
+                {showError(errors.analysisType, touched.analysisType)}
+              </div>
+             
+             {
+              values.analysisType === "Resolution" ? <>
+              <div className="col-md-6 mb-2">
+                    <label>
+                      Resolution Type<span>*</span>
+                    </label>
+                    <select
+                      className="input-control"
+                      name="analysisValue"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.analysisValue}
+                      disabled
+                      // disabled={type === "view" || disable}
+                    >
+                      <option value="" defaultValue hidden>
+                        Select Resolution Value
+                      </option>
+                      {getAnalysisByTypeResolution?.map((item) => {
+                        return (
+                          <>
+                            <option value={item.name}>{item.name}</option>
+                          </>
+                        );
+                      })}
+                    </select>
+                    {showError(errors.analysisValue, touched.analysisValue)}
+                  </div>
+                  {/* choose a data */}
+                  <div className=" col-md-6 ">
+                    <div className="form-group ">
+                      <label>
+                        Date<span>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className="input-control"
+                        placeholder="Search by Name/Email/Mobile Number"
+                        onChange={handleChange}
+                        value={formatDate(values.noOfDay)}
+                        name="noOfDay"
+                        disabled
+                      />
+                    </div>
+                    {showError(errors.noOfDay, touched.noOfDay)}
+                  </div>
+                  {/* choose a time */}
+                  <div className=" col-md-6 ">
+                    <div className="form-group ">
+                      <label>
+                        Time<span>*</span>
+                      </label>
+                      <input
+                        type="time"
+                        className="input-control"
+                        placeholder="Search by Name/Email/Mobile Number"
+                        onChange={handleChange}
+                        value={values.noOfDay}
+                        name="noOfDay"
+                        disabled
+                      />
+                    </div>
+                    {showError(errors.noOfDay, touched.noOfDay)}
+                  </div>
+              </>:<> <div className="col-md-6 mb-2">
+                    <label>
+                      Purpose Type<span>*</span>
+                    </label>
+                    <select
+                      className="input-control"
+                      name="analysisValue"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values?.analysisValue}
+                      disabled
+                      // disabled={type === "view" || disable}
+                    >
+                      <option value="" defaultValue hidden>
+                        Select Purpose Value
+                      </option>
+                      {getAnalysisByTypePurpose?.map((item) => {
+                        return (
+                          <>
+                            <option value={item.name}>{item.name}</option>
+                          </>
+                        );
+                      })}
+                    </select>
+                    {showError(errors.analysisValue, touched.analysisValue)}
+                  </div>
+                  {/* choose a data */}
+                  <div className=" col-md-6 ">
+                    <div className="form-group ">
+                      <label>
+                        Date<span>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className="input-control"
+                        onChange={handleChange}
+                        value={values.noOfDay}
+                        name="noOfDay"
+                        disabled
+                      />
+                    </div>
+                    {showError(errors.noOfDay, touched.noOfDay)}
+                  </div>
+                  {/* choose a time */}
+                  <div className=" col-md-6 ">
+                    <div className="form-group ">
+                      <label>
+                        Time<span>*</span>
+                      </label>
+                      <input
+                        type="time"
+                        className="input-control"
+                        onChange={handleChange}
+                        value={values.noOfDay}
+                        name="noOfDay"
+                        disabled
+                      />
+                    </div>
+                    {showError(errors.noOfDay, touched.noOfDay)}
+                  </div></>
+             }
+
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
               {userById.user?.answer?.length > 0 ? 
               (<div className=" col-md-12 mt-4 ">
                 <div className="popupText">Comments:  </div>

@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const deleteAnalysisData = createAsyncThunk(
   "deleteAnalysis",
   async (delID) => {
     return await makeApiRequest(
-      `/api/analysis/delete-by-id?analysisId=${delID}`,
+      `${api.deleteAnalysis}?analysisId=${delID}`,
       {
         method: "DELETE",
         token: getToken(),
@@ -40,6 +41,7 @@ const deleteAnalysis = createSlice({
         state.success = true;
         state.error = "";
         state.message = payload.message;
+        notify(payload.message);
       })
       .addCase(deleteAnalysisData.rejected, (state, { error }) => {
         state.loading = false;

@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { getRole, showTicketFields } from "./utils";
+import { getRole, notify, showTicketFields } from "./utils";
 
 // const emailRegex =
 //   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -215,16 +215,17 @@ export const ticketSearchSchema = Yup.object()
     searchStatus: Yup.string(),
     startDate: Yup.string(),
     endDate: Yup.string(),
+    analysisType: Yup.string(),
   })
   .test(
     "has-at-least-one-value",
     "At least one field must have a value",
     function (value) {
-      const { ticketNo, searchValue, teamId,searchStatus,startDate,endDate} = value;
-      if (!ticketNo && !searchValue && !teamId && !searchStatus && !startDate  && !endDate) {
+      const { ticketNo, searchValue, teamId,searchStatus,startDate,endDate ,analysisType} = value;
+      if (!ticketNo && !searchValue && !teamId && !searchStatus && !startDate  && !endDate && !analysisType) {
         return this.createError({
           path: "ticketNo",
-          message: "At least one field must have a value",
+          message: notify("At least one field must have a value", "error"),
         });
       }
       return true;
@@ -283,7 +284,9 @@ export function addTicketSchema() {
       teamId: Yup.string().required("Please select a team"),
       managerId: Yup.string().required("Please select a manager"),
       status: Yup.string().required("Please select status"),
-      analysisType: Yup.string().required("Please select   analysisType"),
+      analysisType: Yup.string().required("Please select analysisType"),
+      analysisValue: Yup.string().required("Please select analysisType"),
+      noOfDay: Yup.string().required("Please select one value date and time"),
     
     });
   } else if (role === "ROLE_MANAGER") {
@@ -297,6 +300,9 @@ export function addTicketSchema() {
       managerId: Yup.string().required("Please select a manager"),
       teamId: Yup.string().required("Please select a team"),
       status: Yup.string().required("Please select status"),
+      analysisType: Yup.string().required("Please select analysisType"),
+      analysisValue: Yup.string().required("Please select analysisType"),
+      noOfDay: Yup.string().required("Please select one value date and time"),
     });
   } else if (role === "ROLE_TEAM LEAD") {
     return Yup.object().shape({
@@ -310,6 +316,9 @@ export function addTicketSchema() {
       tlId: Yup.string().required("Please select a team lead"),
       agentId: Yup.string().required("Please select an agent"),
       status: Yup.string().required("Please select status"),
+      analysisType: Yup.string().required("Please select analysisType"),
+      analysisValue: Yup.string().required("Please select analysisType"),
+      noOfDay: Yup.string().required("Please select one value date and time"),
     });
   } else if (role === "ROLE_ASSOCIATE") {
     return Yup.object().shape({
@@ -323,6 +332,9 @@ export function addTicketSchema() {
       agentId: Yup.string().required("Please select an agent"),
       tlId: Yup.string().required("Please select a team lead"),
       status: Yup.string().required("Please select status"),
+      analysisType: Yup.string().required("Please select analysisType"),
+      analysisValue: Yup.string().required("Please select analysisType"),
+      noOfDay: Yup.string().required("Please select one value date and time"),
     });
   } else {
     return Yup.object().shape({
@@ -332,10 +344,12 @@ export function addTicketSchema() {
         .strict(true)
         .required("Please enter question"),
       status: Yup.string().required("Please select status"),
+      analysisType: Yup.string().required("Please select analysisType"),
+      analysisValue: Yup.string().required("Please select analysisType"),
+      noOfDay: Yup.string().required("Please select one value date and time"),
     });
   }
 }
-
 const commonAddUserSchema = {
   fname: Yup.string()
     .required("Please enter first name")

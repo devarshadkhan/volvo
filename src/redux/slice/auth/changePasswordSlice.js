@@ -5,12 +5,13 @@ import {
   makeApiRequest,
   notify,
 } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const changePasswordAction = createAsyncThunk(
   "changePassword",
   async (data) => {
     return await makeApiRequest(
-      `/api/change-password?userId=${getCurrentUserLT()?.id}`,
+      `${api.passwordChange}?userId=${getCurrentUserLT()?.id}`,
       {
         token: getToken(),
         method: "POST",

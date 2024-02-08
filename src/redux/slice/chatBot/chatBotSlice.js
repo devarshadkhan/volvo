@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const getChatBotMessageData = createAsyncThunk("getMessage", async ({senderID, receiverID}) => {
     // console.log("redux cpoa",senderID, receiverID);
-  return await makeApiRequest(`/message/${senderID}/${receiverID}`, {
+  return await makeApiRequest(`${api.getChatBotMessage}/${senderID}/${receiverID}`, {
     token: getToken(),
   });
 });

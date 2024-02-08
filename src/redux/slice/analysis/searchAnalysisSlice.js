@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const searchAnalysisAction = createAsyncThunk(
   "searchAnalysis",
   async ({ searchKey,analysisType,name }) => {
     return await makeApiRequest(
-      `/api/analysis/search?&searchKey=${searchKey}&name=${name}&analysisType=${analysisType}`,
+      `${api.searchAnalysis}?&searchKey=${searchKey}&name=${name}&analysisType=${analysisType}`,
       {
         token: getToken(),
       }

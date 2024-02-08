@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const updateProfileAction = createAsyncThunk(
   "updateProfile",
   async (data) => {
-    return await makeApiRequest(`/api/user/update-by-token`, {
+    return await makeApiRequest(`${api.updateProfile}`, {
       token: getToken(),
       data,
       method: "POST",

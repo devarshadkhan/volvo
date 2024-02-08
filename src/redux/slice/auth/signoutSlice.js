@@ -5,13 +5,14 @@ import {
   notify,
   removeUserSession,
 } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const signoutAction = createAsyncThunk("signout", async () => {
   const options = {
     method: "POST",
     token: getToken(),
   };
-  return await makeApiRequest(`/api/signout`, options);
+  return await makeApiRequest(`${api.signOut}`, options);
 });
 
 const initialState = {

@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const editUpdateAnalysis = createAsyncThunk(
   "updateAnalysis",
   async ({id, data}) => {
-    return await makeApiRequest(`/api/analysis/update?analysisId=${id}`, {
+    return await makeApiRequest(`${api.updateAnalysis}?analysisId=${id}`, {
       token: getToken(),
       data,
       method: "POST",

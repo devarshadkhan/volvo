@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const getDashboardDataListing = createAsyncThunk(
   "getDashboardData",
   async (pageNo) => {
     return await makeApiRequest(
-      `/api/user/ticket-counts?page=${pageNo || 0}`,
+      `${api.getDashboardDataListing}?page=${pageNo || 0}`,
       {
         token: getToken(),
       }

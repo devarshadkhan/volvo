@@ -3,11 +3,11 @@ import { getToken, makeApiRequest, notify } from "../../../utils/utils";
 
 export const searchTicketsAction = createAsyncThunk(
   "searchTickets",
-  async ({ pageNumber,ticketNo,searchValue,teamId,searchStatus,startDate,endDate }) => {
+  async ({ pageNumber,ticketNo,searchValue,teamId,searchStatus,startDate,endDate,analysisType }) => {
     return await makeApiRequest(
       `/api/ticket/search-ticket?page=${
         pageNumber || 0
-      }&ticketNo=${ticketNo}&searchValue=${searchValue}&teamId=${teamId}&searchStatus=${searchStatus}&startDate=${startDate}&endDate=${endDate}`,
+      }&ticketNo=${ticketNo}&searchValue=${searchValue}&teamId=${teamId}&searchStatus=${searchStatus}&startDate=${startDate}&endDate=${endDate}&analysisType=${analysisType}`,
       {
         token: getToken(),
       }

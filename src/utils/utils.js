@@ -100,7 +100,7 @@ export function showTicketFields() {
   const permissions = {
     managerIdVal: false,
     teamIdVal: false,
-    associateIdVal:false,
+    associateIdVal: false,
   };
   const userStr = localStorage.getItem("user");
 
@@ -118,14 +118,24 @@ export function showTicketFields() {
     console.error("Error parsing user data:", error);
   }
 
-  if ( role === "ROLE_ADMIN" || role === "ROLE_SUPPORT" || role === "ROLE_USER" || role === "ROLE_QA") {
-    return { ...permissions,managerIdVal: true };
+  if (
+    role === "ROLE_ADMIN" ||
+    role === "ROLE_SUPPORT" ||
+    role === "ROLE_USER" ||
+    role === "ROLE_QA"
+  ) {
+    return { ...permissions, managerIdVal: true };
   } else if (role === "ROLE_MANAGER") {
     return { ...permissions, teamIdVal: true };
   } else if (role === "ROLE_TEAM LEAD") {
     return { ...permissions, managerIdVal: true, associateIdVal: true };
   } else if (role === "ROLE_ASSOCIATE") {
-    return { ...permissions,managerIdVal: true,teamIdVal: true,associateIdVal: true};
+    return {
+      ...permissions,
+      managerIdVal: true,
+      teamIdVal: true,
+      associateIdVal: true,
+    };
   }
 
   // If no role matches, return the default permissions
@@ -283,7 +293,7 @@ export const getToken = () => {
 };
 
 export function isPermitted(...values) {
-  // console.log("CHECK",...values);
+  // console.log("CHECK", ...values);
   return values.every((value) => value === "1");
 }
 
@@ -575,13 +585,39 @@ export function truncateHTML(html, maxLength) {
   }
 }
 
+export const getFirstLetterName = function (string) {
+  var names = string.split(" "),
+    initials = names[0].substring(0, 1).toUpperCase();
 
-export  const  getFirstLetterName = function (string) {
-  var names = string.split(' '),
-      initials = names[0].substring(0, 1).toUpperCase();
-  
   if (names.length > 1) {
-      initials += names[names.length - 1].substring(0, 1).toUpperCase();
+    initials += names[names.length - 1].substring(0, 1).toUpperCase();
   }
   return initials;
 };
+
+// export const inputHtmlDataformateChange = (params) => {
+//   // console.log(params);
+//   // if (!params) {
+//   //   return '';
+//   // }
+
+//   // const inputDate = params;
+//   // const parts = inputDate.split("/");
+
+//   // // Rearrange the parts
+//   // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
+//   // return formattedDate;
+// };
+
+
+export const  formatCustomDate = (inputDate) =>  {
+  const date = new Date(inputDate);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
+

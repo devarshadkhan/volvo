@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const addTicketAction = createAsyncThunk("addTicket", async (data) => {
-  return await makeApiRequest(`/api/ticket/create`, {
+  return await makeApiRequest(`${api.createTicket}`, {
     token: getToken(),
     method: "POST",
     data,

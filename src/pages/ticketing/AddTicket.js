@@ -3,7 +3,7 @@ import AddTicketForm from "./AddTicketForm";
 import useWindowSize from "../../utils/Hooks/useWindowSize";
 import Modal from "../../components/commonUI/Modal";
 
-const AddUser = ({ isOpen, setIsOpen, title, disabled, type }) => {
+const AddUser = ({ isOpen, setIsOpen, title, disabled, type,ticketId }) => {
   const windowSize = useWindowSize();
 
   let left = windowSize > 768 ? "calc(50% - 400px)" : "2.5%";
@@ -35,6 +35,7 @@ const AddUser = ({ isOpen, setIsOpen, title, disabled, type }) => {
         type={type}
         disable={disabled}
         onClose={() => setIsOpen(false)}
+        ticketId={ticketId}
       />
     </Modal>
   );

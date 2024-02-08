@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { makeApiRequest, notify, setUserSession } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const signInAction = createAsyncThunk("signIn", async (data) => {
   const options = {
@@ -7,7 +8,7 @@ export const signInAction = createAsyncThunk("signIn", async (data) => {
     method: "POST",
     data,
   };
-  return await makeApiRequest(`/api/signin`, options);
+  return await makeApiRequest(`${api.signIn}`, options);
 });
 
 const initialState = {
