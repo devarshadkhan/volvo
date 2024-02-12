@@ -11,6 +11,7 @@
     "chart.js": "^4.4.1",
     "dotenv": "^16.3.1",
     "echarts-for-react": "^3.0.2",
+    "emoji-picker-react": "^4.7.14",
     "formik": "^2.4.2",
     "jodit-react": "^4.0.4",
     "papaparse": "^5.4.1",

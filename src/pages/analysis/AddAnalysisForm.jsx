@@ -10,12 +10,19 @@ import { getAnalysisByIdAction } from "../../redux/slice/analysis/getAnalysisByI
 import Success from "../../components/commonUI/Success";
 const validationSchema = yup.object({
   name: yup
-    .string("Enter your AnalyticsName")
+    .string("Enter your Analytics name")
+    .trim("Space are not allowed at start and end")
+    .strict(true)
     .required("Analytics name is required"),
   analysisType: yup
     .string("Select Analytics Type")
-    .required("Analytics Type is required"),
-  status: yup.string("Select Status").required("Status is required"),
+    .trim("Space are not allowed at start and end")
+    .strict(true)
+    .required("Analytics type is required"),
+  status: yup
+    .string("Select Status")
+    .trim("Space are not allowed at start and end")
+    .required("Status is required"),
 });
 
 const AddAnalysisForm = ({
@@ -39,7 +46,7 @@ const AddAnalysisForm = ({
   const getAnalysisById = useSelector(
     (state) => state.getAnalysisById.analysisData
   );
-  console.log("getAnalysisById", getAnalysisById);
+  console.log("getAnalysisById", getAnalysisById.analysisData);
   const isDisabled = type === "view" || type === "update" || type === "profile";
   // const AllStore = useSelector((state)=> state)
   // console.log("ALL_______________________STRORE",AllStore);
@@ -51,20 +58,15 @@ const AddAnalysisForm = ({
 
   const dispatch = useDispatch();
   const fetchData = useSelector((state) => state.analysisType.analysisData);
-
+  console.log("fetchData", fetchData);
   useEffect(() => {
     if (type === "add") {
       setUserValues(initialValues);
     }
     if (getAnalysisById?.success) {
-      if (type === "profile") {
+      if (type === "update" || type === "view") {
         setUserValues({
-          name: getAnalysisById.analysisData?.name,
-          analysisType: getAnalysisById.analysisData?.analysisType,
-          status: getAnalysisById.analysisData?.status,
-        });
-      } else if (type === "update" || type === "view") {
-        setUserValues({
+          ...getAnalysisById.analysisData,
           name: getAnalysisById.analysisData?.name,
           analysisType: getAnalysisById.analysisData?.analysisType,
           status: getAnalysisById.analysisData?.status,
@@ -89,10 +91,11 @@ const AddAnalysisForm = ({
     validationSchema: validationSchema,
     enableReinitialize: true, // Add this property
     onSubmit: async (values, { resetForm }) => {
+      console.log(values);
       const newValue = {
-        name: values.name || "",
-        analysisType: values.analysisType || "",
-        status: values.status || "",
+        name: values.name,
+        analysisType: values.analysisType,
+        status: values.status,
       };
 
       if (type === "add") {
@@ -110,6 +113,7 @@ const AddAnalysisForm = ({
           status: values.status,
         };
         // Assuming editUpdateAnalysis is an asynchronous operation
+        // await dispatch(editUpdateAnalysis({ id: values.id, data: newValue }));
         await dispatch(editUpdateAnalysis({ id: analysisId, data: newValue }));
         setSuccess(true);
         // resetForm();
@@ -139,7 +143,7 @@ const AddAnalysisForm = ({
               <div className="row">
                 <div className="col-md-6 mb-2">
                   <label>
-                    Analytics name<span>*</span>
+                  Analytics name<span>*</span>
                   </label>
                   <input
                     type="text"
@@ -156,7 +160,7 @@ const AddAnalysisForm = ({
 
                 <div className="col-md-6 mb-2">
                   <label>
-                    Analytics Type<span>*</span>
+                  Analytics Type<span>*</span>
                   </label>
                   <select
                     className="input-control"
@@ -169,11 +173,22 @@ const AddAnalysisForm = ({
                     <option value="" defaultValue>
                       Select Analytics Type
                     </option>
-                    {fetchData?.data?.map((ele) => (
-                      <option value={ele.id} key={ele.id}>
-                        {ele.name}
-                      </option>
-                    ))}
+                    {/* {
+                      type === "update" ? <>     <option value={"1"}>Resolution</option>
+                    <option value={"2"}>Purpose</option></> : <>     <option value={"1"}>Resolution</option>
+                    <option value={"2"}>Purpose</option></>
+                    } */}
+               
+                    {fetchData?.data?.map((ele) => {
+                      console.log("adasdasdas", ele.id);
+                      return (
+                        <>
+                          <option key={ele.id} value={ele.id}>
+                            {ele.name}
+                          </option>
+                        </>
+                      );
+                    })}
                   </select>
                   {showError(
                     formik.errors.analysisType,

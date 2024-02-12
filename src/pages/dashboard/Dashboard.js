@@ -179,7 +179,11 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-              {fetchData?.openTicketsList?.map((item,i)=>{
+              {fetchData?.openTicketsList?.length === 0 ? <> <tr>
+              <td colSpan={"9"} align="center">
+                <h2 className="mt-5 mb-5"> No Tickets Found!</h2>
+              </td>
+            </tr></>:<>{fetchData?.openTicketsList?.map((item,i)=>{
                 const serialNumber = (startSerialNumber + i)
                       .toString()
                       .padStart(2, "0");
@@ -201,7 +205,8 @@ const Dashboard = () => {
                 </tr>
                   </>
                 )
-              })}
+              })}</>}
+              
                 
               </tbody>
             </table>

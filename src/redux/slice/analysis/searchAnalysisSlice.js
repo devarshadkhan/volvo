@@ -45,7 +45,7 @@ const searchAnalysisSlice = createSlice({
         state.error = error.message;
         state.success = false;
         state.message = error.message;
-        notify(error.message, "error");
+        // notify(error.message, "error");
         console.log("Error: ", error.message);
       });
   },

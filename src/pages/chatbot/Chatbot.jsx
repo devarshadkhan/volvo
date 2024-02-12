@@ -11,25 +11,27 @@ import {
 } from "../../utils/utils";
 import Messaging from "./Components/Messaging";
 import NoChatSelected from "./Components/NoChatSelected";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getChatBotMessageData } from "../../redux/slice/chatBot/chatBotSlice";
 
 const Chatbot = () => {
+  const dispatch = useDispatch();
+  let socket = useRef();
   const [friendbox, setTab] = useState(true);
   const friendShow = () => setTab(!friendbox);
   const [Groupbox, setShow] = useState(true);
-  const u = useSelector((state) => state.userByToken.user);
-  console.log("USER DETAIL ", u );
-  // console.log("adedsd",u);
-  let socket = useRef();
   const senderId = getCurrentUserLT()?.id;
-  // console.log("ccccccccccccccccccccccccccccccccc",senderId);
-  // console.log("wqsd",u.id);
   const [userList, setUserList] = useState([]);
-  // console.log(userList);
   const [selectedUser, setSelectedUser] = useState(null);
-  console.log("sele",selectedUser);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [handleEmjoji,setHandleEmjoji] = useState("")
+  // console.log(handleEmjoji.emoji);
+  
+  
+  
+  const u = useSelector((state) => state.userByToken.user);
+
 
   const GroupShow = () => setShow(!Groupbox);
   // const [u, setU] = useState({});
@@ -60,7 +62,6 @@ const Chatbot = () => {
       });
     }
   }, []);
-
 
   // const handleSendMessage = async (e) => {
   //   e.preventDefault();
@@ -122,16 +123,17 @@ const Chatbot = () => {
       notify("Please enter a message before sending.", "error");
       return;
     }
-  
+
     const messageData = {
       senderId: senderId,
       receiverId: selectedUser.userId,
       message: newMessage,
       image: selectedUser.profileImage, // Assuming this is the image URL for the selected user
+      emojiSet:handleEmjoji.emoji,
     };
-  
+
     socket.current.emit("sendMessage", messageData);
-  
+
     if (senderId === u.id) {
       setMessages((existingMessages) => [
         ...existingMessages,
@@ -141,13 +143,25 @@ const Chatbot = () => {
         },
       ]);
     }
-  
+
     setNewMessage("");
   };
   const fullName =
     u?.fname || u?.lname ? u?.fname + " " + u?.lname : "Loading...";
   const profileImage = u.profileImage ? u.profileImage : "";
   const roleType = u.role ? u.role : "";
+
+  // last index message show
+  const selectedUserId = localStorage.getItem("receiverId");
+  console.log(selectedUserId);
+  const getData = useSelector((item) => item.getChatBot.dataMesaage);
+  console.log("qqqqqqqqqqqqqqq", getData);
+  useEffect(() => {
+    // Fetch chat messages when the component mounts
+    dispatch(
+      getChatBotMessageData({ senderID: senderId, receiverID: selectedUserId })
+    );
+  }, [dispatch, senderId, selectedUserId]);
 
   return (
     <div className="frame">
@@ -156,8 +170,9 @@ const Chatbot = () => {
           <div class="users">
             <img src={u.profileImage} />
             <h3>
-            {handleFullName({ fullName, fname: u?.fname, lname: u?.lname }) ||
-              "Loading..."}  <i class="fa-solid fa-pen edit-icon "></i>
+              {handleFullName({ fullName, fname: u?.fname, lname: u?.lname }) ||
+                "Loading..."}{" "}
+              <i class="fa-solid fa-pen edit-icon "></i>
               <br />
               {/* <font>{u.role}</font> */}
             </h3>
@@ -271,6 +286,7 @@ const Chatbot = () => {
                               </p> */}
                             </h4>
                           </div>
+                         
                         </div>
                       </li>
                     );
@@ -311,6 +327,8 @@ const Chatbot = () => {
           message={newMessage}
           senderId={senderId}
           chat={selectedUser}
+          handleEmjoji={handleEmjoji}
+          setHandleEmjoji={setHandleEmjoji}
           {...{ u, handleSendMessage, messages }}
         />
       ) : (

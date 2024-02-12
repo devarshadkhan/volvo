@@ -6,7 +6,7 @@ import AddTicket from "./AddTicket";
 import { useDispatch, useSelector } from "react-redux";
 import { getRolesAction } from "../../redux/slice/forForms/getRolesSlice";
 import { useFormik } from "formik";
-import { convertToCSV, isPermitted, showError } from "../../utils/utils";
+import { convertDateFormat, convertToCSV, isPermitted, showError } from "../../utils/utils";
 import { ticketSearchSchema } from "../../utils/schema";
 import { useLocation } from "react-router-dom";
 import { searchCSVTicketsAction } from "../../redux/slice/tickets/searchCSVTicketsSlice";
@@ -28,6 +28,12 @@ const style = {
 // Ticket component
 // Ticket component
 // Ticket component
+const validHours = [
+  "1 hours", "2 hours", "3 hours", "4 hours", "5 hours", "6 hours", 
+  "7 hours", "8 hours", "9 hours", "10 hours", "11 hours", "12 hours", 
+  "1hr", "2hr", "3hr", "4hr", "5hr", "6hr", "7hr", "8hr", "9hr", "10hr", 
+  "11hr", "12hr"
+];
 const Tickets = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -165,6 +171,17 @@ const Tickets = () => {
   const status = ["Pending", "Open", "Close"];
   // seriel Number for pagination
   const startSerialNumber = pageNumber * 10 + 1;
+
+
+  function ddddddaa(params) {
+    switch (params === "1 hours") {
+      case <></>:
+        
+    
+      default:
+        break;
+    }
+  }
   return (
     <>
       <div className="doctor-wrapper">
@@ -175,9 +192,9 @@ const Tickets = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="row mar-20">
-              <div className=" col-lg-9">
-                <div className="row">
-                  <div className=" col-lg-3 col-width  col-6">
+              <div className=" col-lg-12">
+                <div className="row   ">
+                  <div className=" col-lg-3 col-width p-0  col-6">
                     {isPermitted(permitted?.isSearch) && (
                       <div class="form-group ">
                         <input
@@ -188,7 +205,7 @@ const Tickets = () => {
                           onChange={handleChange}
                           value={values.ticketNo}
                         />
-                        {/* {showError(errors.ticketNo, touched.ticketNo)} */}
+                        {showError(errors.ticketNo, touched.ticketNo)}
                       </div>
                     )}
                   </div>
@@ -302,9 +319,7 @@ const Tickets = () => {
                       </div>
                     )}
                   </div>
-                </div>
-              </div>
-              <div className=" col-lg-3 ">
+                  <div className=" col-lg-8 ">
                 <div className="row">
                   {isPermitted(permitted?.isSearch) && (
                     <div className=" col-lg-4 col-10 bflex">
@@ -325,7 +340,7 @@ const Tickets = () => {
                     </div>
                   )}
 
-                  <div className=" col-lg-8 ">
+                  <div className=" col-lg-8 ml-auto">
                     <div className="row">
                       <div className=" col-lg-12 right-aling">
                         {isPermitted(permitted?.isCsv) && (
@@ -362,11 +377,16 @@ const Tickets = () => {
                   </div>
                 </div>
               </div>
+                </div>
+               
+              </div>
+             
             </div>
           </form>
 
-          <div className="mid-table">
-            <table
+          <div className="table-responsive">
+          <div className="mid-table table-responsive">
+          <table
               className="table MobileTable"
               cellSpacing="2"
               cellPadding="0"
@@ -377,9 +397,9 @@ const Tickets = () => {
                   <th scope="col">S.No</th>
                   <th scope="col">Ticket No. </th>
                   <th scope="col">Question</th>
-                  <th scope="col">Analysis Type</th>
-                  <th scope="col">Analysis Value</th>
-                  <th scope="col">No. of Time & Date</th>
+                  <th scope="col">Analytics Type</th>
+                  {/* <th scope="col">Analysis Value</th> */}
+                  <th scope="col">No. of hours/date</th>
                   <th scope="col">Team </th>
                   <th scope="col">Manager </th>
                   <th scope="col">Team Leader </th>
@@ -433,7 +453,7 @@ const Tickets = () => {
                         >
                           {user.analysisType}
                         </td>
-                        <td
+                        {/* <td
                           data-label="Analysis Type"
                           style={{
                             maxWidth: "200px",
@@ -442,7 +462,7 @@ const Tickets = () => {
                           }}
                         >
                           {user.analysisValue}
-                        </td>
+                        </td> */}
                         <td
                           data-label="date&time"
                           style={{
@@ -451,7 +471,94 @@ const Tickets = () => {
                             textOverflow: "ellipsis",
                           }}
                         >
-                          {user?.noOfDay}
+                        {/* {ddddddaa(user?.noOfDay)} */}
+                        {/* {(user?.noOfDay >= 1 && user?.noOfDay <= 12) ? `${user?.noOfDay} hours` : convertDateFormat(user?.noOfDay)} */}
+                        {/* {user?.noOfDay &&
+    !isNaN(user.noOfDay) &&
+    user?.noOfDay >= 1 &&
+    user?.noOfDay <= 12
+    ? `${user?.noOfDay} hours`
+    : convertDateFormat(user?.noOfDay)} */}
+    {/* {user?.noOfDay === "1 hours" ? (
+    user?.noOfDay
+  ) : (
+    user?.noOfDay === "2 hours" ? (
+      `${user?.noOfDay}`
+    ):  user?.noOfDay === "3 hours" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "4 hours" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "5 hours" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "6 hours" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "7 hours" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "8 hours" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "9 hours" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "10 hours" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "11 hours" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "12 hours" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "1hr" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "2hr" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "3hr" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "4hr" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "5hr" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "6hr" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "7hr" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "8hr" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "9hr" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "10hr" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "11hr" ? (
+      `${user?.noOfDay}`
+    )
+    : user?.noOfDay === "12hr" ? (
+      `${user?.noOfDay}`
+    )
+    
+     : (
+      convertDateFormat(user?.noOfDay)
+    )
+  )} */}
+                          {/* {user?.noOfDay ===  "10 hours" ? user?.noOfDay : convertDateFormat(user?.noOfDay)} */}
+                          {/* {user?.noOfDay === "" ? convertDateFormat(user?.noOfDay):user?.noOfDay} */}
+
+                          {validHours.includes(user?.noOfDay) ? user?.noOfDay : convertDateFormat(user?.noOfDay)}
                         </td>
                         <td data-label="Team Leader">
                           {user?.teamName || "NA"}
@@ -539,6 +646,8 @@ const Tickets = () => {
                 )}
               </tbody>
             </table>
+          </div>
+          
           </div>
 
           {ticketList?.dataItems?.length > 0 && (

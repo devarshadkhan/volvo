@@ -15,17 +15,30 @@ const ShowAnswer = ({ onClose, disable, type }) => {
   const [routeFlag, setRouteFlag] = useState(false);
   const [StatusVal,setStatus] = useState(false);
   const [taskAnswerError, setTaskAnswerError] = useState("");
-  const formatDate = (inputDate) => {
-    console.log("inputDate",inputDate);
-    const parts = inputDate.split('/');
+
+
+  const formatDate = (params) => {
+    const parts = params.split('/');
     // month is 0-based, so we need to subtract 1 from the month
-    const formattedDate = new Date(`${parts[2]}-${parts[0]}-${parts[1]}`);
+    const formattedDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
     const year = formattedDate.getFullYear();
     const month = (formattedDate.getMonth() + 1).toString().padStart(2, '0');
     const day = formattedDate.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
   
+
+  const formatTime = (params) => {
+    const date = new Date(`2000-01-01 ${params}`);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const newFormattedTime = `${hours}:${minutes}`;
+    return  newFormattedTime
+  };
+
+
+
+
   
   const isDisabled = type === "view" || type === "update" || type === "reply";
 
@@ -159,8 +172,8 @@ const ShowAnswer = ({ onClose, disable, type }) => {
 
 
 
-
-
+  const [resolutionOptions, setResolutionOptions] = useState([]);
+  const [purposeOptions, setPurposeOptions] = useState([]);
     // Analysis state in write code Arshad Pathaan
     const getAnalysisByTypePurpose = useSelector(
       (state) =>
@@ -177,6 +190,28 @@ const ShowAnswer = ({ onClose, disable, type }) => {
       dispatch(getAnalysisByTypePurposeAPI());
       dispatch(getAnalysisByTypeResolutionAPI());
     }, []);
+    
+  useEffect(() => {
+    setPurposeOptions(
+      getAnalysisByTypePurpose?.map((item) => {
+        return {
+          value: item?.name,
+          label: item?.name,
+        }
+      }))
+    
+  }, [getAnalysisByTypePurpose]);
+
+  useEffect(() => {
+    setResolutionOptions(
+      getAnalysisByTypeResolution?.map((item) => {
+        return {
+          value: item?.name,
+          label: item?.name,
+        }
+      }))
+    
+  }, [getAnalysisByTypeResolution]);
   return (
     <>
       <form onSubmit={handleSubmit}>
@@ -213,7 +248,233 @@ const ShowAnswer = ({ onClose, disable, type }) => {
               </div>
 
 
-              <div className=" col-md-12 mt-3 ">
+         
+           
+
+
+
+            
+
+
+
+
+
+
+
+              <div className="col-md-6 mb-2">
+                <label>
+                  Analysis Type<span>*</span>
+                </label>
+                <select
+                  className="input-control werh"
+                  name="analysisType"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values?.analysisType}
+                  disabled
+                  // style={{color:"red"}}
+                >
+                  <option value="">Select Analysis Type</option>
+
+                  <option value="1" className="werh">Resolution</option>
+                  <option value="2" className="werh">Purpose</option>
+                </select>
+                {showError(errors.analysisType, touched.analysisType)}
+              </div>
+
+              {values.analysisType === "2" && (
+                <>
+                  <div className="col-md-6 mb-2">
+                    <label>
+                      Purpose Type<span>*</span>
+                    </label>
+
+                    <Select
+                      className="basic-single"
+                      classNamePrefix="select"
+                      name="analysisValue"
+                      options={purposeOptions}
+                      onChange={(selectedOption) => setFieldValue('analysisValue', selectedOption?.value)}
+                      onBlur={handleBlur}
+                      value={purposeOptions?.find(option => option.value === values.analysisValue)}
+                      isDisabled
+                    />
+                  
+                    {showError(errors.analysisValue, touched.analysisValue)}
+                  </div>
+                  {/* choose a data */}
+                  <div className=" col-md-6 ">
+                    <div className="form-group ">
+                      <label htmlFor="noOfDay">
+                        Date<span>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className="input-control"
+                        name="noOfDay"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values?.noOfDay}
+                        // disabled={disable}
+                        // ref={dateInputRef}
+                        id="noOfDay"
+                        // min={today}
+                        disabled
+                      />
+                    </div>
+                    {showError(errors.noOfDay, touched.noOfDay)}
+                  </div>
+                  {/* choose a time */}
+                  <div className="col-md-6">
+                    <label>
+                      No. of hours<span>*</span>
+                    </label>
+                    <select
+                      className="input-control"
+                      name="noOfDay"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values?.noOfDay}
+                      disabled
+                    >
+                      <option value="" defaultValue>
+                        Select No. of hours
+                      </option>
+                      <>
+                        <option value="1 hours">1 hour</option>
+                        <option value="2 hours">2 hour</option>
+                        <option value="3 hours">3 hour</option>
+                        <option value="4 hours">4 hour</option>
+                        <option value="5 hours">5 hour</option>
+                        <option value="6 hours">6 hour</option>
+                        <option value="7 hours">7 hour</option>
+                        <option value="8 hours">8 hour</option>
+                        <option value="9 hours">9 hour</option>
+                        <option value="10 hours">10 hour</option>
+                        <option value="12 hours">12 hour</option>
+                      </>
+                      {showError(errors.noOfDay, touched.noOfDay)}
+                    </select>
+                    {/* <Select
+                      className="basic-single"
+                      classNamePrefix="select"
+                      name="noOfDay"
+                      options={hourData.map((item) => ({
+                        value: item.id,
+                        label: item.name,
+                      }))}
+                      onChange={(selectedOption) => setFieldValue('noOfDay', selectedOption?.value)}
+                      onBlur={handleBlur}
+                      value={hourData.find(option => option.name === values.noOfDay)}
+                      // options={hourData.map((item) => ({
+                      //   value: item.id,
+                      //   label: item.name,
+                      // }))}
+                      // onChange={handleChange}
+                      // onBlur={handleBlur}
+                      // value={values?.noOfDay}
+                    /> */}
+                
+                  </div>
+                </>
+              )}
+              {values.analysisType === "1" && (
+                <>
+                  <div className="col-md-6 mb-2">
+                    <label>
+                      Resolution Type<span>*</span>
+                    </label>
+                    <Select
+                      className="basic-single"
+                      classNamePrefix="select"
+                      name="analysisValue"
+                      options={resolutionOptions}
+                      onChange={(selectedOptionq) => setFieldValue('analysisValue', selectedOptionq?.value)}
+                      onBlur={handleBlur}
+                      value={resolutionOptions?.find(option => option.value === values.analysisValue)}
+                      isDisabled
+                      disabled
+                    />
+                   
+                    {showError(errors.analysisValue, touched.analysisValue)}
+                  </div>
+                  {/* choose a data */}
+                  <div className=" col-md-6 ">
+                    <div className="form-group ">
+                      <label htmlFor="noOfDay">
+                        Date<span>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className="input-control"
+                        placeholder="Date of Birth"
+                        name="noOfDay"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values?.noOfDay}
+                        disabled
+                        // ref={dateInputRef}
+                        id="noOfDay"
+                        
+                        // min={today}
+                      />
+                    </div>
+                    {showError(errors.noOfDay, touched.noOfDay)}
+                  </div>
+                  {/* choose a time */}
+                  <div className="col-md-6">
+                    <label>
+                      No. of hours<span>*</span>
+                    </label>
+                    {/* <Select
+                      className="basic-single"
+                      classNamePrefix="select"
+                      name="noOfDay"
+                      options={hourData.map((item) => ({
+                        value: item.name,
+                        label: item.name,
+                      }))}
+                      onChange={(selectedOption) => setFieldValue('noOfDay', selectedOption?.value)}
+                      onBlur={handleBlur}
+                      value={hourData.find(option => option.name === values.noOfDay)}
+                      // onChange={handleChange}
+                      // onBlur={handleBlur}
+                      // value={values?.noOfDay}
+                    /> */}
+                       <select
+                      className="input-control"
+                      name="noOfDay"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values?.noOfDay}
+                      disabled
+                    >
+                      <option value="" defaultValue>
+                        Select No. of hours
+                      </option>
+                      <>
+                        <option value="1 hours">1 hour</option>
+                        <option value="2 hours">2 hour</option>
+                        <option value="3 hours">3 hour</option>
+                        <option value="4 hours">4 hour</option>
+                        <option value="5 hours">5 hour</option>
+                        <option value="6 hours">6 hour</option>
+                        <option value="7 hours">7 hour</option>
+                        <option value="8 hours">8 hour</option>
+                        <option value="9 hours">9 hour</option>
+                        <option value="10 hours">10 hour</option>
+                        <option value="12 hours">12 hour</option>
+                      </>
+                      {showError(errors.noOfDay, touched.noOfDay)}
+                    </select>
+                  </div>
+                </>
+              )}
+
+
+
+
+                  <div className=" col-md-12 mt-3 ">
                 <div className="popupText">
                   <div class="row">
                    <div class=" col-lg-1">
@@ -252,170 +513,6 @@ const ShowAnswer = ({ onClose, disable, type }) => {
                     </div>
                   </div>
               </div>
-           
-
-
-
-              <div className="col-md-6 mb-2">
-                <label>
-                  Analytics Type<span>*</span>
-                </label>
-                <select
-                  className="input-control"
-                  name="analysisType"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values?.analysisType}
-                  disabled
-                >
-                  {/* <option value="" >
-                    Select Analytics Type
-                  </option> */}
-                  {
-              values.analysisType === "Resolution" ? <> <option value={"1"} >Resolution</option></>:<> <option value={"2"} >Purpose</option></>
-             }
-                 
-                 
-                </select>
-                {showError(errors.analysisType, touched.analysisType)}
-              </div>
-             
-             {
-              values.analysisType === "Resolution" ? <>
-              <div className="col-md-6 mb-2">
-                    <label>
-                      Resolution Type<span>*</span>
-                    </label>
-                    <select
-                      className="input-control"
-                      name="analysisValue"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.analysisValue}
-                      disabled
-                      // disabled={type === "view" || disable}
-                    >
-                      <option value="" defaultValue hidden>
-                        Select Resolution Value
-                      </option>
-                      {getAnalysisByTypeResolution?.map((item) => {
-                        return (
-                          <>
-                            <option value={item.name}>{item.name}</option>
-                          </>
-                        );
-                      })}
-                    </select>
-                    {showError(errors.analysisValue, touched.analysisValue)}
-                  </div>
-                  {/* choose a data */}
-                  <div className=" col-md-6 ">
-                    <div className="form-group ">
-                      <label>
-                        Date<span>*</span>
-                      </label>
-                      <input
-                        type="date"
-                        className="input-control"
-                        placeholder="Search by Name/Email/Mobile Number"
-                        onChange={handleChange}
-                        value={formatDate(values.noOfDay)}
-                        name="noOfDay"
-                        disabled
-                      />
-                    </div>
-                    {showError(errors.noOfDay, touched.noOfDay)}
-                  </div>
-                  {/* choose a time */}
-                  <div className=" col-md-6 ">
-                    <div className="form-group ">
-                      <label>
-                        Time<span>*</span>
-                      </label>
-                      <input
-                        type="time"
-                        className="input-control"
-                        placeholder="Search by Name/Email/Mobile Number"
-                        onChange={handleChange}
-                        value={values.noOfDay}
-                        name="noOfDay"
-                        disabled
-                      />
-                    </div>
-                    {showError(errors.noOfDay, touched.noOfDay)}
-                  </div>
-              </>:<> <div className="col-md-6 mb-2">
-                    <label>
-                      Purpose Type<span>*</span>
-                    </label>
-                    <select
-                      className="input-control"
-                      name="analysisValue"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values?.analysisValue}
-                      disabled
-                      // disabled={type === "view" || disable}
-                    >
-                      <option value="" defaultValue hidden>
-                        Select Purpose Value
-                      </option>
-                      {getAnalysisByTypePurpose?.map((item) => {
-                        return (
-                          <>
-                            <option value={item.name}>{item.name}</option>
-                          </>
-                        );
-                      })}
-                    </select>
-                    {showError(errors.analysisValue, touched.analysisValue)}
-                  </div>
-                  {/* choose a data */}
-                  <div className=" col-md-6 ">
-                    <div className="form-group ">
-                      <label>
-                        Date<span>*</span>
-                      </label>
-                      <input
-                        type="date"
-                        className="input-control"
-                        onChange={handleChange}
-                        value={values.noOfDay}
-                        name="noOfDay"
-                        disabled
-                      />
-                    </div>
-                    {showError(errors.noOfDay, touched.noOfDay)}
-                  </div>
-                  {/* choose a time */}
-                  <div className=" col-md-6 ">
-                    <div className="form-group ">
-                      <label>
-                        Time<span>*</span>
-                      </label>
-                      <input
-                        type="time"
-                        className="input-control"
-                        onChange={handleChange}
-                        value={values.noOfDay}
-                        name="noOfDay"
-                        disabled
-                      />
-                    </div>
-                    {showError(errors.noOfDay, touched.noOfDay)}
-                  </div></>
-             }
-
-
-            
-
-
-
-
-
-
-
-
 
 
 

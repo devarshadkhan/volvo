@@ -3,7 +3,7 @@ import { getToken, makeApiRequest, notify } from "../../../utils/utils";
 import { api } from "../../../network-request/api";
 
 export const updateAnalysisStatus = createAsyncThunk(
-  "updateAnalysis",
+  "updateStatusAnalysis",
   async ({ id, data }) => {
     return await makeApiRequest(`${api.statusUpdateAnalysis}?analysisId=${id}`, {
       token: getToken(),
@@ -22,7 +22,7 @@ analysisData: {},
 };
 
 const updateAnalysisSlice = createSlice({
-  name: "updateAnalysis",
+  name: "updateStatusAnalysis",
   initialState,
   reducers: {},
   extraReducers: (builder) => {

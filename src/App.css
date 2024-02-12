@@ -1,5 +1,6 @@
 .error-msg {
   color: red;
+  margin-top: 5px;
   font-size: 14px;
 }
 
@@ -34,3 +35,8 @@ input:disabled + label {
 /* monazir */
 
 .lefttext{width: 100%;}
+
+
+/* .flexing{flex-wrap: nowrap !important;} */
+
+.werh{color: red !important;}

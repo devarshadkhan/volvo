@@ -119,7 +119,7 @@ export const store = configureStore({
     updateAnalysis:updateAnalysis,
     getAnalysisById:getAnalysisByIdSlice,
     getsearchAnalysis:searchAnalysisSlice,
-    handleUpdateStatus:updateAnalysisSlice,
+    updateStatusAnalysis:updateAnalysisSlice,
     getAnalysisByTypePurpose:getAnalysisbyTypePurposeSlice,
     getAnalysisByTypeResolution:getAnalysisbyTypeResolutionSlice
   },

@@ -197,7 +197,6 @@ const AddUserForm = ({ onClose, disable, type }) => {
     touched,
     handleSubmit,
     setFieldValue,
-    resetForm,
   } = useFormik({
     initialValues: userValues,
     validationSchema: addTicketSchema,
@@ -224,8 +223,6 @@ const AddUserForm = ({ onClose, disable, type }) => {
 
       if (type === "add") {
         dispatch(addTicketAction(newValues));
-        resetForm();
-        // onClose()
       } else if (type === "update") {
         dispatch(updateTicketAction({ id: values.ticketNo, data: newValues }));
       } else if (type === "answer") {
@@ -534,14 +531,12 @@ const AddUserForm = ({ onClose, disable, type }) => {
                     <option value="1">Open</option>
                     <option value="0">Pending</option>
                   </select>
-
-                  {showError(errors.status, touched.status)}
                 </div>
               )}
 
               <div className="col-md-6 mb-2">
                 <label>
-                Analytics Type<span>*</span>
+                  Analysis Type<span>*</span>
                 </label>
                 <select
                   className="input-control"
@@ -550,7 +545,7 @@ const AddUserForm = ({ onClose, disable, type }) => {
                   onBlur={handleBlur}
                   value={values?.analysisType}
                 >
-                  <option value="">Select Analytics Type</option>
+                  <option value="">Select Analysis Type</option>
 
                   <option value="1">Resolution</option>
                   <option value="2">Purpose</option>
@@ -570,11 +565,34 @@ const AddUserForm = ({ onClose, disable, type }) => {
                       classNamePrefix="select"
                       name="analysisValue"
                       options={purposeOptions}
+                      // onChange={handleChange}
                       onChange={(selectedOption) => setFieldValue('analysisValue', selectedOption?.value)}
+
+                      // onChange={(selectedOption) => setFieldValue('analysisValue', selectedOption?.value)}
+
                       onBlur={handleBlur}
-                      value={purposeOptions?.find(option => option.value === values.analysisValue)}
+                      // value={values?.analysisValue}
+                      value={purposeOptions.find(option => option.value === values.analysisValue)}
                     />
-                  
+                    {/* <select
+                      className="input-control"
+                      name="analysisValue"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values?.analysisValue}
+                      // disabled={type === "view" || disable}
+                    >
+                      <option value="" defaultValue>
+                        Select Purpose Value
+                      </option>
+                      {getAnalysisByTypePurpose?.map((item) => {
+                        return (
+                          <>
+                            <option value={item.name}>{item.name}</option>
+                          </>
+                        );
+                      })}
+                    </select> */}
                     {showError(errors.analysisValue, touched.analysisValue)}
                   </div>
                   {/* choose a data */}
@@ -603,7 +621,25 @@ const AddUserForm = ({ onClose, disable, type }) => {
                     <label>
                       No. of hours<span>*</span>
                     </label>
-                    <select
+                    <Select
+                      className="basic-single"
+                      classNamePrefix="select"
+                      // defaultValue={colourOptions[0]}
+                      // isDisabled={isDisabled}
+                      // isLoading={isLoading}
+                      // isClearable={isClearable}
+                      // isRtl={isRtl}
+                      // isSearchable={isSearchable}
+                      name="color"
+                      options={hourData.map((item) => ({
+                        value: item.id,
+                        label: item.name,
+                      }))}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values?.noOfDay}
+                    />
+                    {/* <select
                       className="input-control"
                       name="noOfDay"
                       onChange={handleChange}
@@ -614,40 +650,20 @@ const AddUserForm = ({ onClose, disable, type }) => {
                         Select No. of hours
                       </option>
                       <>
-                        <option value="1 hours">1 hour</option>
-                        <option value="2 hours">2 hour</option>
-                        <option value="3 hours">3 hour</option>
-                        <option value="4 hours">4 hour</option>
-                        <option value="5 hours">5 hour</option>
-                        <option value="6 hours">6 hour</option>
-                        <option value="7 hours">7 hour</option>
-                        <option value="8 hours">8 hour</option>
-                        <option value="9 hours">9 hour</option>
-                        <option value="10 hours">10 hour</option>
-                        <option value="12 hours">12 hour</option>
+                        <option value="1 hour">1 hour</option>
+                        <option value="2 hour">2 hour</option>
+                        <option value="3 hour">3 hour</option>
+                        <option value="4 hour">4 hour</option>
+                        <option value="5 hour">5 hour</option>
+                        <option value="6 hour">6 hour</option>
+                        <option value="7 hour">7 hour</option>
+                        <option value="8 hour">8 hour</option>
+                        <option value="9 hour">9 hour</option>
+                        <option value="10 hour">10 hour</option>
+                        <option value="12 hour">12 hour</option>
                       </>
                       {showError(errors.noOfDay, touched.noOfDay)}
-                    </select>
-                    {/* <Select
-                      className="basic-single"
-                      classNamePrefix="select"
-                      name="noOfDay"
-                      options={hourData.map((item) => ({
-                        value: item.id,
-                        label: item.name,
-                      }))}
-                      onChange={(selectedOption) => setFieldValue('noOfDay', selectedOption?.value)}
-                      onBlur={handleBlur}
-                      value={hourData.find(option => option.name === values.noOfDay)}
-                      // options={hourData.map((item) => ({
-                      //   value: item.id,
-                      //   label: item.name,
-                      // }))}
-                      // onChange={handleChange}
-                      // onBlur={handleBlur}
-                      // value={values?.noOfDay}
-                    /> */}
-                
+                    </select> */}
                   </div>
                 </>
               )}
@@ -660,13 +676,37 @@ const AddUserForm = ({ onClose, disable, type }) => {
                     <Select
                       className="basic-single"
                       classNamePrefix="select"
-                      name="analysisValue"
+                      // defaultValue={colourOptions[0]}
+                      // isDisabled={isDisabled}
+                      // isLoading={isLoading}
+                      // isClearable={isClearable}
+                      // isRtl={isRtl}
+                      // isSearchable={isSearchable}
+                      name="color"
                       options={resolutionOptions}
-                      onChange={(selectedOptionq) => setFieldValue('analysisValue', selectedOptionq?.value)}
+                      onChange={handleChange}
                       onBlur={handleBlur}
-                      value={resolutionOptions?.find(option => option.value === values.analysisValue)}
+                      value={values?.analysisValue}
                     />
-                   
+                    {/* <select
+                      className="input-control"
+                      name="analysisValue"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.analysisValue}
+                      disabled={type === "view" || disable}
+                    >
+                      <option value="" defaultValue hidden>
+                        Select Resolution Value
+                      </option>
+                      {getAnalysisByTypeResolution?.map((item) => {
+                        return (
+                          <>
+                            <option value={item.name}>{item.name}</option>
+                          </>
+                        );
+                      })}
+                    </select> */}
                     {showError(errors.analysisValue, touched.analysisValue)}
                   </div>
                   {/* choose a data */}
@@ -696,22 +736,25 @@ const AddUserForm = ({ onClose, disable, type }) => {
                     <label>
                       No. of hours<span>*</span>
                     </label>
-                    {/* <Select
+                    <Select
                       className="basic-single"
                       classNamePrefix="select"
-                      name="noOfDay"
+                      // defaultValue={colourOptions[0]}
+                      // isDisabled={isDisabled}
+                      // isLoading={isLoading}
+                      // isClearable={isClearable}
+                      // isRtl={isRtl}
+                      // isSearchable={isSearchable}
+                      name="color"
                       options={hourData.map((item) => ({
-                        value: item.name,
+                        value: item.id,
                         label: item.name,
                       }))}
-                      onChange={(selectedOption) => setFieldValue('noOfDay', selectedOption?.value)}
+                      onChange={handleChange}
                       onBlur={handleBlur}
-                      value={hourData.find(option => option.name === values.noOfDay)}
-                      // onChange={handleChange}
-                      // onBlur={handleBlur}
-                      // value={values?.noOfDay}
-                    /> */}
-                       <select
+                      value={values?.noOfDay}
+                    />
+                    {/* <select
                       className="input-control"
                       name="noOfDay"
                       onChange={handleChange}
@@ -722,20 +765,19 @@ const AddUserForm = ({ onClose, disable, type }) => {
                         Select No. of hours
                       </option>
                       <>
-                        <option value="1 hours">1 hour</option>
-                        <option value="2 hours">2 hour</option>
-                        <option value="3 hours">3 hour</option>
-                        <option value="4 hours">4 hour</option>
-                        <option value="5 hours">5 hour</option>
-                        <option value="6 hours">6 hour</option>
-                        <option value="7 hours">7 hour</option>
-                        <option value="8 hours">8 hour</option>
-                        <option value="9 hours">9 hour</option>
-                        <option value="10 hours">10 hour</option>
-                        <option value="12 hours">12 hour</option>
+                      <option value="1 hour">1 hour</option>
+                        <option value="2 hour">2 hour</option>
+                        <option value="3 hour">3 hour</option>
+                        <option value="4 hour">4 hour</option>
+                        <option value="5 hour">5 hour</option>
+                        <option value="6 hour">6 hour</option>
+                        <option value="7 hour">7 hour</option>
+                        <option value="8 hour">8 hour</option>
+                        <option value="9 hour">9 hour</option>
+                        <option value="10 hour">10 hour</option>
+                        <option value="12 hour">12 hour</option>
                       </>
-                      {showError(errors.noOfDay, touched.noOfDay)}
-                    </select>
+                    </select> */}
                   </div>
                 </>
               )}

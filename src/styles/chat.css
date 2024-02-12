@@ -790,7 +790,7 @@
   font-size: 20px;
 }
 
-.chat-box input {
+/* .chat-box input {
   padding: 5px 0 5px 20px;
   width: 100%;
   border: none;
@@ -800,7 +800,7 @@
   border: 1px #e6e6e6 solid;
   margin-top: 10px;
   height: 38px;
-}
+} */
 .chat-box textarea {
   padding: 5px 0 5px 20px;
   width: 100%;
@@ -816,12 +816,12 @@
 .chat-box textarea:focus-visible{
   border: 1px solid red;
 }
-.chat-box label {
+/* .chat-box label {
   position: absolute;
   margin: 17px 0 0 0px;
   color: #cdcdcd;
   right: 25px;
-}
+} */
 
 .chat-box input:focus {
   outline: none;
@@ -1965,3 +1965,12 @@
 }
 
 .firstLetter p{margin: 0;color: #fff; font-weight: 900;}
+
+
+
+/* Emoji */
+
+.emojiPicker{
+  position: absolute;
+    bottom: 46px;
+}

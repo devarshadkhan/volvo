@@ -7,6 +7,8 @@ import { formatRelativeDate } from "../../../utils/utils";
 import Delete from "../../../components/commonUI/Delete";
 import { useDispatch, useSelector } from "react-redux";
 import { getChatBotMessageData } from "../../../redux/slice/chatBot/chatBotSlice";
+import EmojiPicker from 'emoji-picker-react';
+
 
 const Messaging = ({
   chat,
@@ -16,17 +18,67 @@ const Messaging = ({
   handleSendMessage,
   senderId,
   u,
+  setHandleEmjoji,
+  handleEmjoji
 }) => {
-  console.log("chat",messages);
+  console.log("chat", messages);
   const messagesContainerRef = useRef(null);
 
+  /**
+   * Emoji state and logic here
+   */
+
+  const [emojiShowing,setEmojiShowing] = useState(false)
+
+  const emojiPickerRef = useRef(null);
+
+  // Function to close emoji picker when clicking outside
+  const handleOutsideClick = (event) => {
+    if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+      setEmojiShowing(false);
+    }
+  };
+
+
+
+
+  const handleEmojiClick = (event) => {
+    console.log(handleEmjoji);
+    // setHandleEmjoji(handleEmjoji.emoji);
+    // setMessage(prevMessage => prevMessage + handleEmjoji.emoji);  // Update the input box value
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Attach event listener on component mount
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
   // chat message
   /**
    * Selected Message Particular by ID
    */
   const selectedUserId = chat.userId; // Assuming chat object has an 'id' property
 
-  const getData = useSelector((item) => item.getChatBot);  
+  const getData = useSelector((item) => item.getChatBot);
   const werty = getData.dataMesaage;
   const dispatch = useDispatch();
   useEffect(() => {
@@ -45,15 +97,13 @@ const Messaging = ({
     (m) => m.senderId === selectedUserId || m.receiverId === selectedUserId
   );
 
-
   /**
    * Chat Message listing Dat
    */
   const senderIdToFilter = String(u.id);
   const receiverIdToFilter = String(selectedUserId);
-// console.log("senderIdToFilter",senderIdToFilter);
-// console.log("receiverIdToFilter",receiverIdToFilter);
-
+  // console.log("senderIdToFilter",senderIdToFilter);
+  // console.log("receiverIdToFilter",receiverIdToFilter);
 
   useEffect(() => {
     // Scroll to the bottom of the messages div
@@ -61,7 +111,7 @@ const Messaging = ({
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
     }
-  }, [werty,message]);
+  }, [werty, message]);
   const [isOpen, setIsopen] = useState(false);
   const ToggleSidebar = () => {
     isOpen === true ? setIsopen(false) : setIsopen(true);
@@ -101,7 +151,8 @@ const Messaging = ({
         <div className="contact-profile">
           <div className="row">
             <div className="col-7">
-              <div className="users" onClick={ToggleSidebar}>
+              {/* <div className="users" onClick={ToggleSidebar}> */}
+              <div className="users">
                 <span
                   class={
                     chat?.online === true
@@ -112,10 +163,12 @@ const Messaging = ({
                 <img src={chat?.profileImage || "/icons-images/profile1.png"} />
                 <h3>
                   {chat?.fname + "    " + chat?.lname}{" "}
-                  <i class="fa-solid fa-gear"></i>
+                  {/* <i class="fa-solid fa-gear"></i> */}
                   <br />
-                 
-                  <p className={chat?.online === true ? "online":"offline"}> {chat?.online === true ? "Online":"Offline"}</p>
+                  <p className={chat?.online === true ? "online" : "offline"}>
+                    {" "}
+                    {chat?.online === true ? "Online" : "Offline"}
+                  </p>
                 </h3>
               </div>
             </div>
@@ -132,31 +185,32 @@ const Messaging = ({
         <div className="messages" ref={messagesContainerRef}>
           <ul>
             {/* {werty.length > 0 ? <> */}
-            {werty.map((m) => {  
-                 {/* console.log("WERYDAT ",m.senderId) */}
-              return(
+            {werty.map((m) => {
+              {
+                /* console.log("WERYDAT ",m.senderId) */
+              }
+              return (
                 <>
-              <li className={u?.id == m?.senderId ? "sent" : "replies"}>
-            
-                <img
-                  src={
-                    u?.id === m?.senderId
-                      ? `${m.receiverImage}`
-                      : `${m.senderImage}`
-                  }
-                  alt=""
-                />
-                <p>
-                  {m.text}
-                  <br />
-                  <font class="we">
-                    {formatRelativeDate(m?.timestamp)}{" "}
-                    <i className="fa-solid fa-check-double"></i>
-                  </font>
-                </p>
-              </li>
+                  <li className={u?.id == m?.senderId ? "sent" : "replies"}>
+                    <img
+                      src={
+                        u?.id === m?.senderId
+                          ? `${m.receiverImage}`
+                          : `${m.senderImage}`
+                      }
+                      alt=""
+                    />
+                    <p>
+                      {m.text}
+                      <br />
+                      <font class="we">
+                        {formatRelativeDate(m?.timestamp)}{" "}
+                        <i className="fa-solid fa-check-double"></i>
+                      </font>
+                    </p>
+                  </li>
                 </>
-              )
+              );
             })}
             {/* </>:<><h1 className="textHighlighted">NO DATA FOUND</h1></>} */}
             {/* Display Receiver's messages */}
@@ -186,56 +240,81 @@ const Messaging = ({
               </li>
             ))} */}
             {/* Display API Call Messages */}
-            {selectedUserMessages.map((m)=>{
-              console.log("LIVE SOCKET MESSAGE",m.senderId)
-              console.log("LIVE SOCKET MESSAGE ?.id",u?.id)
-              return(
+            {selectedUserMessages.map((m) => {
+              console.log("LIVE SOCKET MESSAGE", m.senderId);
+              console.log("LIVE SOCKET MESSAGE ?.id", u?.id);
+              return (
                 <>
-                <li className={u?.id === m?.senderId ? "sent" : "replies"}>
-                <img
-                  src={`${m.image}`}
-                  // src={
-                  //   u?.id === m?.senderId
-                  //     ? `${m.image}`
-                  //     : `${m.image}`
-                  // }
-                  alt=""
-                />
-                <p>
-                  {m.message}
-                  <br />
-                  <font class="we">
-                    {formatRelativeDate(m?.timestamp)}{" "}
-                    <i className="fa-solid fa-check-double"></i>
-                  </font>
-                </p>
-              </li>
+                  <li className={u?.id === m?.senderId ? "sent" : "replies"}>
+                    <img
+                      src={`${m.image}`}
+                      // src={
+                      //   u?.id === m?.senderId
+                      //     ? `${m.image}`
+                      //     : `${m.image}`
+                      // }
+                      alt=""
+                    />
+                    <p>
+                      {m.message}
+                      <br />
+                      <font class="we">
+                        {formatRelativeDate(m?.timestamp)}{" "}
+                        <i className="fa-solid fa-check-double"></i>
+                      </font>
+                    </p>
+                  </li>
                 </>
-              )
+              );
             })}
           </ul>
+        {emojiShowing ? <>
+          <div className="emojiPicker">
+          <EmojiPicker onEmojiClick={handleEmojiClick} />
+          </div>
+        </>: null}
         </div>
-
         <form className="chat-box" onSubmit={handleSendMessage}>
           <div className="">
             <div className="icon">
-              <NavLink>
+              {/* <NavLink>
                 <i class="fa-solid fa-plus"></i>
-              </NavLink>
+              </NavLink> */}
               <NavLink>
                 {" "}
                 <i class="fa-regular fa-image"></i>
               </NavLink>
               <NavLink>
-                <i class="fa-solid fa-paperclip"></i>
+                {" "}
+                <i class="fa-regular fa-face-smile" onClick={()=>setEmojiShowing(!emojiShowing)}></i>
               </NavLink>
+
+              <a>
+                <label htmlFor="file-input4">
+                  {/* <img
+                            src={
+                              "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/2048px-No_image_available.svg.png"
+                            }
+                            width={"10px"}
+                            alt="Uploaded"
+                          /> */}
+                  <i class="fa-solid fa-paperclip"></i>
+                </label>
+                <input
+                  id="file-input4"
+                  type="file"
+                  accept="image/*"
+                  className="d-none"
+                />
+              </a>
             </div>
           </div>
+
           <div className="chatinputwidth">
             <div class="search">
-              <label for="">
+              {/* <label for="">
                 <i class="fa-regular fa-face-smile"></i>
-              </label>
+              </label> */}
 
               <textarea
                 type="text"
@@ -1390,25 +1469,25 @@ export default Messaging;
 
 // export default Messaging;
 
-  // const senderMessages = getData.dataMesaage
-  //   .filter(
-  //     (m) =>
-  //       m.senderId === senderIdToFilter && m.receiverId === receiverIdToFilter
-  //   )
-  //   .sort(
-  //     (a, b) =>
-  //       new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-  //   );
+// const senderMessages = getData.dataMesaage
+//   .filter(
+//     (m) =>
+//       m.senderId === senderIdToFilter && m.receiverId === receiverIdToFilter
+//   )
+//   .sort(
+//     (a, b) =>
+//       new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+//   );
 
-  // const receiverMessages = getData.dataMesaage
-  //   .filter(
-  //     (m) =>
-  //       m.senderId === receiverIdToFilter && m.receiverId === senderIdToFilter
-  //   )
-  //   .sort(
-  //     (a, b) =>
-  //       new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-  //   );
+// const receiverMessages = getData.dataMesaage
+//   .filter(
+//     (m) =>
+//       m.senderId === receiverIdToFilter && m.receiverId === senderIdToFilter
+//   )
+//   .sort(
+//     (a, b) =>
+//       new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+//   );
 
-  // console.log("senderMessages", senderMessages);
-  // console.log("receiverMessages", receiverMessages);
+// console.log("senderMessages", senderMessages);
+// console.log("receiverMessages", receiverMessages);

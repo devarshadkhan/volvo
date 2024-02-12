@@ -18,6 +18,7 @@ import { useFormik } from "formik";
 import { searchAnalysisAction } from "../../redux/slice/analysis/searchAnalysisSlice.js";
 import * as yup from "yup";
 import { updateAnalysisStatus } from "../../redux/slice/analysis/updateAnalysisSlice.js";
+import { analysisSearchSchema } from "../../utils/schema.js";
 const Analysis = () => {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
@@ -32,15 +33,17 @@ const Analysis = () => {
   const searchAnalysis = useSelector((s) => s.getsearchAnalysis);
   const AnalysisAll = useSelector((s) => s.getAnalysis);
   const updateAnalysis = useSelector((s) => s.updateAnalysis);
+  // const updateStatusAnalysis = useSelector((s) => s);
+  // console.log(updateStatusAnalysis);
   const startSerialNumber = pageNumber * 20 + 1;
 
-  const validationSchema = yup.object({
-    searchKey: yup.string(),
-    name: yup.string(),
-    analysisType: yup.string(),
-  });
+  // const validationSchema = yup.object({
+  //   searchKey: yup.string().matches(/^[a-zA-Z0-9\s]+$/, 'Special characters not allowed').min(1, "Please enter atleast 1 characters"),
+  //   name: yup.string().matches(/^[a-zA-Z0-9\s]+$/, 'Special characters not allowed').min(1, "Please enter atleast 1 characters"),
+  //   analysisType: yup.string(),
+  // });
 
-  // yeh search karne per api call hogi 
+  // yeh search karne per api call hogi
   useEffect(() => {
     if (values.searchValue || values.status || values.userType) {
       dispatch(searchAnalysisAction({ ...values }));
@@ -62,19 +65,18 @@ const Analysis = () => {
     setAnalysisList(AnalysisAll.analysisData);
   }, [AnalysisAll.success, AnalysisAll.analysisData]);
 
-  // Data search karne per 
+  // Data search karne per
   useEffect(() => {
     searchAnalysis?.success && setAnalysisList(searchAnalysis.analysisData);
   }, [searchAnalysis?.success]);
 
   // Analytisc status change notification type
 
-  const handleStatusChange = (value,id)=>{
-     if(value, id){
-      dispatch(updateAnalysisStatus({data:{status:value}, id}))
-     }
-  } 
-
+  const handleStatusChange = (value, id) => {
+    if ((value, id)) {
+      dispatch(updateAnalysisStatus({ data: { status: value }, id }));
+    }
+  };
 
   const initialValues = {
     searchKey: "",
@@ -86,7 +88,7 @@ const Analysis = () => {
   const { handleChange, handleSubmit, values, resetForm, errors, touched } =
     useFormik({
       initialValues,
-      validationSchema: validationSchema,
+      validationSchema: analysisSearchSchema,
       onSubmit: (data) => {
         // console.log("DATA",data);
         let searchData;
@@ -123,13 +125,12 @@ const Analysis = () => {
                     <td data-label="S.No">{serialNumber}</td>
                     <td data-label="Name">{item.name}</td>
                     <td data-label="Analytics Type">{item.analysisType} </td>
-                    <td data-label="Status">
+                    <td data-label="Status"  className="tdGape">
                       <Switch
-                       handleChange={handleStatusChange}
                         switchValue={item.status}
                         switchId={item.id}
+                        handleChange={handleStatusChange}
                       />
-            
                     </td>
                     <td data-label="Created Date">
                       {convertDateFormat(item.createdAt)}
@@ -194,7 +195,7 @@ const Analysis = () => {
       <div className="doctor-wrapper">
         <div className="container container-padd">
           <div className="mid-head mar-20">
-            <h2>Users</h2>
+            <h2>Analytics</h2>
           </div>
 
           {/* <form onSubmit={handleSubmit}> */}
@@ -205,7 +206,7 @@ const Analysis = () => {
                   <input
                     type="text"
                     className="input-control"
-                    placeholder="Search by Name/Email/Mobile Number"
+                    placeholder="Search by name"
                     onChange={handleChange}
                     value={values.name}
                     name="name"
@@ -224,7 +225,7 @@ const Analysis = () => {
                   >
                     {" "}
                     <option value="" selected>
-                      Analysis Type
+                    Analytics Type
                     </option>
                     <option value="1">Resolution</option>
                     <option value="2">Purpose</option>
@@ -232,27 +233,30 @@ const Analysis = () => {
                 </div>
                 {showError(errors.analysisType, touched.analysisType)}
               </div>
-          
 
               <div className=" col-lg-2 col-5">
                 <div className="form-group ">
                   <button className=" btn-md btn-md-blue" type="submit">
                     <i className="fa-solid fa-magnifying-glass"></i>
                   </button>
-                  <button className=" btn-md btn-md-blue" type="button"    onClick={() => {
-                        dispatch(getAnalysisDataListing(pageNumber));
-                        resetForm();
-                        setPageNumber(0);
-                      }}>
+                  <button
+                    className=" btn-md btn-md-blue"
+                    type="button"
+                    onClick={() => {
+                      dispatch(getAnalysisDataListing(pageNumber));
+                      resetForm();
+                      setPageNumber(0);
+                    }}
+                  >
                     <i className="fa-solid fa-rotate-right"></i>
                   </button>
                 </div>
               </div>
-              <div className=" col-lg-2 col-7">
+              <div className=" col-lg-2 col-7 ml-auto">
                 <div className="aling-right bflex">
                   <button
                     to="/doctors/add-doctor"
-                    className=" btn-md btn-md-blue"
+                    className=" btn-md btn-md-blue ml-auto"
                     type="button"
                     onClick={() => setIsOpen(true)}
                   >
@@ -313,7 +317,7 @@ const Analysis = () => {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         setIsOpen={setIsOpen}
-        title="Add User"
+        title="Add Analytics"
         type="add"
       />
       <AddAnalysis
@@ -328,7 +332,7 @@ const Analysis = () => {
         isOpen={viewModalData}
         onClose={() => setViewModalData(false)}
         setIsOpen={setViewModalData}
-        title="View Details"
+        title="View Analytics"
         type="view"
         disabled={true}
       />
