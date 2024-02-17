@@ -621,3 +621,59 @@ export const  formatCustomDate = (inputDate) =>  {
 }
 
 
+
+
+
+// chatbot time chnages 
+
+export const formateChatTime = (params)=>{
+  const dateObject = new Date(params);
+  const now = new Date();
+
+  // Calculate the time difference in milliseconds
+  const timeDifference = now - dateObject;
+
+  if (timeDifference < 60000) { // Within the last minute
+    return 'just now';
+  }
+
+  // Extract date and time components
+  const year = dateObject.getFullYear();
+  const month = (dateObject.getMonth() + 1).toString().padStart(2, '0');
+  const day = dateObject.getDate().toString().padStart(2, '0');
+  const hours = dateObject.getHours().toString().padStart(2, '0');
+  const minutes = dateObject.getMinutes().toString().padStart(2, '0');
+
+  // Format the date and time to a more readable string
+  const formattedTime = `${hours}:${minutes}`;
+  return formattedTime;
+}
+
+
+export const formateTimeWithChatEnd = (params) => {
+  const dateObject = new Date(params);
+  const now = new Date();
+
+  // Extract date and time components
+  const year = dateObject.getFullYear();
+  const month = (dateObject.getMonth() + 1).toString().padStart(2, '0');
+  const day = dateObject.getDate().toString().padStart(2, '0');
+  const hours = dateObject.getHours().toString().padStart(2, '0');
+  const minutes = dateObject.getMinutes().toString().padStart(2, '0');
+
+  // Format the date and time to a more readable string with AM/PM
+  const formattedTime = dateObject.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+
+  // Check if the message is from today
+  if (
+    now.getFullYear() === dateObject.getFullYear() &&
+    now.getMonth() === dateObject.getMonth() &&
+    now.getDate() === dateObject.getDate()
+  ) {
+    return formattedTime;
+  }
+
+  // If it's not from today, return the date and time
+  // return `${year}-${month}-${day} ${formattedTime}`;
+  return ` ${formattedTime}`;
+}

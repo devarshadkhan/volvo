@@ -1,54 +1,48 @@
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import Success from "../../components/commonUI/Success";
-import { getRole, showError,truncateHTML } from "../../utils/utils";
+import { getRole, showError, truncateHTML } from "../../utils/utils";
 import { useDispatch, useSelector } from "react-redux";
-import { replySchema } from "../../utils/schema";
 import { answerTicketAction } from "../../redux/slice/tickets/answerTaskSlice";
 import TextEditor from "./TextEditor";
 import Select from "react-select";
 import { getAnalysisByTypePurposeAPI } from "../../redux/slice/analysis/getAnalysisbyTypePurposeSlice";
 import { getAnalysisByTypeResolutionAPI } from "../../redux/slice/analysis/getAnalysisbyTypeResolutionSlice";
+import { hourData } from "../../utils/mockData";
 
 const ShowAnswer = ({ onClose, disable, type }) => {
   const [success, setSuccess] = useState(false);
   const [routeFlag, setRouteFlag] = useState(false);
-  const [StatusVal,setStatus] = useState(false);
+  const [StatusVal, setStatus] = useState(false);
   const [taskAnswerError, setTaskAnswerError] = useState("");
 
-
   const formatDate = (params) => {
-    const parts = params.split('/');
+    const parts = params.split("/");
     // month is 0-based, so we need to subtract 1 from the month
     const formattedDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
     const year = formattedDate.getFullYear();
-    const month = (formattedDate.getMonth() + 1).toString().padStart(2, '0');
-    const day = formattedDate.getDate().toString().padStart(2, '0');
+    const month = (formattedDate.getMonth() + 1).toString().padStart(2, "0");
+    const day = formattedDate.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-  
 
   const formatTime = (params) => {
     const date = new Date(`2000-01-01 ${params}`);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
     const newFormattedTime = `${hours}:${minutes}`;
-    return  newFormattedTime
+    return newFormattedTime;
   };
 
-
-
-
-  
   const isDisabled = type === "view" || type === "update" || type === "reply";
 
   const initialValues = {
     ticketId: "",
     taskAnswer: "",
-    status:"",
-    analysisValue:"",
-    analysisType:"",
-    noOfDay:"",
+    status: "",
+    analysisValue: "",
+    analysisType: "",
+    noOfDay: "",
   };
   const [userValues, setUserValues] = useState(initialValues);
 
@@ -92,54 +86,71 @@ const ShowAnswer = ({ onClose, disable, type }) => {
     }
   }, [answerTicket.success, routeFlag]);
 
-  const { handleChange, handleBlur,setFieldValue,setFieldTouched, values, errors, touched, handleSubmit } =
-    useFormik({
-      initialValues: userValues,
-      enableReinitialize: true,
-      onSubmit: (values) => {
-        if (typeof values.taskAnswer === "undefined") {
-          const errorMessage = "Task answer is required.";
-          setTaskAnswerError(errorMessage);
-        }
-        const strippedTaskAnswer = values.taskAnswer.replace(/<[^>]*>/g, '');
-        if (!strippedTaskAnswer.trim()) {
-          const errorMessage = "Task answer is required.";
-          setTaskAnswerError(errorMessage);
-          return;
-        }
-        setTaskAnswerError(""); 
-        let answerType = "";
-        const role = getRole();
-        if (role === "ROLE_MANAGER") {
-          answerType = "manager";
-        } else if (role === "ROLE_TEAM LEAD") {
-          answerType = "team Lead";
-        } else if (role === "ROLE_ASSOCIATE") {
-          answerType = "associate";
-        }
-        let status = '';
-  
-        if(StatusVal){
-          status = StatusVal;
-        }else{
-          status = values?.status;
-        }
-        
-        dispatch(
-          answerTicketAction({taskAnswer: values.taskAnswer,ticketId: values.ticketNo,answerType,status:status})
-        );
-        setRouteFlag(true);
-      },
-    });
+  const {
+    handleChange,
+    handleBlur,
+    setFieldValue,
+    setFieldTouched,
+    values,
+    errors,
+    touched,
+    handleSubmit,
+  } = useFormik({
+    initialValues: userValues,
+    enableReinitialize: true,
+    onSubmit: (values) => {
+      if (typeof values.taskAnswer === "undefined") {
+        const errorMessage = "Task answer is required.";
+        setTaskAnswerError(errorMessage);
+      }
+      const strippedTaskAnswer = values.taskAnswer.replace(/<[^>]*>/g, "");
+      if (!strippedTaskAnswer.trim()) {
+        const errorMessage = "Task answer is required.";
+        setTaskAnswerError(errorMessage);
+        return;
+      }
+      setTaskAnswerError("");
+      let answerType = "";
+      const role = getRole();
+      if (role === "ROLE_MANAGER") {
+        answerType = "manager";
+      } else if (role === "ROLE_TEAM LEAD") {
+        answerType = "team Lead";
+      } else if (role === "ROLE_ASSOCIATE") {
+        answerType = "associate";
+      }
+      let status = "";
 
-  const canAnswer = ["ROLE_MANAGER", "ROLE_TEAM LEAD", "ROLE_ASSOCIATE"].includes(
-    getRole()
-  );
+      if (StatusVal) {
+        status = StatusVal;
+      } else {
+        status = values?.status;
+      }
+
+      dispatch(
+        answerTicketAction({
+          taskAnswer: values.taskAnswer,
+          ticketId: values.ticketNo,
+          answerType,
+          status: status,
+        })
+      );
+      setRouteFlag(true);
+    },
+  });
+
+  const canAnswer = [
+    "ROLE_MANAGER",
+    "ROLE_TEAM LEAD",
+    "ROLE_ASSOCIATE",
+  ].includes(getRole());
 
   function getInitials(fullName) {
     if (!fullName) return "";
     const namesArray = fullName.split(" ");
-    const initials = namesArray.map((name) => name.charAt(0).toUpperCase()).join("");
+    const initials = namesArray
+      .map((name) => name.charAt(0).toUpperCase())
+      .join("");
     return initials;
   }
 
@@ -148,7 +159,6 @@ const ShowAnswer = ({ onClose, disable, type }) => {
     setStatus(selectedStatus);
     setFieldValue("status", selectedStatus); // Use setFieldValue from useFormik
     setFieldTouched("status", true);
-   
   };
 
   const renderRole = (role, value) => {
@@ -165,41 +175,47 @@ const ShowAnswer = ({ onClose, disable, type }) => {
   };
   const status = ["Pending", "Open", "Close"];
 
+  const [ghanta, setGhanta] = useState(hourData);
 
-
-
-
-
-
+  useEffect(() => {
+    setGhanta(
+      ghanta.map((item) => {
+        return {
+          value: item?.name,
+          label: item?.name,
+        };
+      })
+    );
+  }, []);
 
   const [resolutionOptions, setResolutionOptions] = useState([]);
   const [purposeOptions, setPurposeOptions] = useState([]);
-    // Analysis state in write code Arshad Pathaan
-    const getAnalysisByTypePurpose = useSelector(
-      (state) =>
-        state.getAnalysisByTypePurpose.getAnalysisByTypePurposeData
-          .analysisPurpose
-    );
-    const getAnalysisByTypeResolution = useSelector(
-      (state) =>
-        state.getAnalysisByTypeResolution.getAnalysisByTypeResolutionData
-          .analysisResolution
-    );
-  
-    useEffect(() => {
-      dispatch(getAnalysisByTypePurposeAPI());
-      dispatch(getAnalysisByTypeResolutionAPI());
-    }, []);
-    
+  // Analysis state in write code Arshad Pathaan
+  const getAnalysisByTypePurpose = useSelector(
+    (state) =>
+      state.getAnalysisByTypePurpose.getAnalysisByTypePurposeData
+        .analysisPurpose
+  );
+  const getAnalysisByTypeResolution = useSelector(
+    (state) =>
+      state.getAnalysisByTypeResolution.getAnalysisByTypeResolutionData
+        .analysisResolution
+  );
+
+  useEffect(() => {
+    dispatch(getAnalysisByTypePurposeAPI());
+    dispatch(getAnalysisByTypeResolutionAPI());
+  }, []);
+
   useEffect(() => {
     setPurposeOptions(
       getAnalysisByTypePurpose?.map((item) => {
         return {
           value: item?.name,
           label: item?.name,
-        }
-      }))
-    
+        };
+      })
+    );
   }, [getAnalysisByTypePurpose]);
 
   useEffect(() => {
@@ -208,9 +224,9 @@ const ShowAnswer = ({ onClose, disable, type }) => {
         return {
           value: item?.name,
           label: item?.name,
-        }
-      }))
-    
+        };
+      })
+    );
   }, [getAnalysisByTypeResolution]);
   return (
     <>
@@ -220,52 +236,128 @@ const ShowAnswer = ({ onClose, disable, type }) => {
           <div className="Add-form-group">
             <div className="row">
               <div className=" col-md-12 mb-1 ">
-                <label>Question <span>*</span><font> Ticket Number: <strong>{values?.ticketNo}</strong></font></label>
-                <textarea type="text" className="input-control textAreahight"
-                  placeholder="Lorem Ipsum is simply dummy text of the printing and type setting industry." name="taskQuestion"
-                  value={values?.taskQuestion} disabled={true} >
-                </textarea>
+                <label>
+                  Question <span>*</span>
+                  <font>
+                    {" "}
+                    Ticket Number: <strong>{values?.ticketNo}</strong>
+                  </font>
+                </label>
+                <textarea
+                  type="text"
+                  className="input-control textAreahight"
+                  placeholder="Lorem Ipsum is simply dummy text of the printing and type setting industry."
+                  name="taskQuestion"
+                  value={values?.taskQuestion}
+                  disabled={true}
+                ></textarea>
               </div>
               <div className=" col-md-6 mb-2 ">
-                <label> Team<span>*</span></label>
-                 <Select name="teamId" isDisabled={true} value={{value: values?.teamName || "",label:values?.teamName || "Select Team"}} placeholder={"Select a Team"}/>
+                <label>
+                  {" "}
+                  Team<span>*</span>
+                </label>
+                <Select
+                  name="teamId"
+                  isDisabled={true}
+                  value={{
+                    value: values?.teamName || "",
+                    label: values?.teamName || "Select Team",
+                  }}
+                  placeholder={"Select a Team"}
+                />
               </div>
 
               <div className=" col-md-6 mb-2 ">
-                <label> Manager<span>*</span></label>
-                 <Select name="managerId" isDisabled={true} value={{value: values?.managerName || "",label:values?.managerName || "Select Manager"}} placeholder={"Select a Manager"}/>
+                <label>
+                  {" "}
+                  Manager<span>*</span>
+                </label>
+                <Select
+                  name="managerId"
+                  isDisabled={true}
+                  value={{
+                    value: values?.managerName || "",
+                    label: values?.managerName || "Select Manager",
+                  }}
+                  placeholder={"Select a Manager"}
+                />
               </div>
 
-             
               <div className=" col-md-6 mb-2 ">
-                <label> Team Lead<span>*</span></label>
-                 <Select name="teamLeadId" isDisabled={true} value={{value: values?.tlName || "",label:values?.tlName || "Select Team Lead"}} placeholder={"Select a Team Lead"}/>
+                <label>
+                  {" "}
+                  Team Lead<span>*</span>
+                </label>
+                <Select
+                  name="teamLeadId"
+                  isDisabled={true}
+                  value={{
+                    value: values?.tlName || "",
+                    label: values?.tlName || "Select Team Lead",
+                  }}
+                  placeholder={"Select a Team Lead"}
+                />
               </div>
 
               <div className=" col-md-6 mb-2 ">
-                <label> Agent<span>*</span></label>
-                 <Select name="agentId" isDisabled={true} value={{value: values?.agentName || "",label:values?.agentName || "Select Agent Name"}} placeholder={"Select Agent Name"}/>
+                <label>
+                  {" "}
+                  Agent<span>*</span>
+                </label>
+                <Select
+                  name="agentId"
+                  isDisabled={true}
+                  value={{
+                    value: values?.agentName || "",
+                    label: values?.agentName || "Select Agent Name",
+                  }}
+                  placeholder={"Select Agent Name"}
+                />
               </div>
-
-
-         
-           
-
-
-
-            
-
-
-
-
-
-
 
               <div className="col-md-6 mb-2">
                 <label>
-                  Analysis Type<span>*</span>
+                Analytics Type<span>*</span>
                 </label>
-                <select
+                <Select
+                  name="analysisType"
+                  // options={analyticsTypeOption}
+                  options={[
+                    { value: "", label: "choose analytics type" },
+                    { value: "1", label: "Resolution" },
+                    { value: "2", label: "Purpose" },
+                  ]}
+                  onChange={(selectedOption) =>
+                    setFieldValue("analysisType", selectedOption?.value)
+                  }
+                  onBlur={handleBlur}
+                  value={{
+                    value: values.analysisType || "",
+                    label:
+                      values.analysisType === "1" || values.analysisType === "2"
+                        ? values.analysisType === "1"
+                          ? "Resolution"
+                          : "Purpose"
+                        : "Choose analytics type",
+                  }}
+                  isDisabled
+                  // value={{
+                  //   value: values.analysisType || "",
+                  //   label:
+                  //     values.analysisType === "1" ? "Resolution" : "Purpose",
+                  // }}
+                  // value={analyticsTypeOption?.find(
+                  //   (option) => option.value === values.analysisType
+                  // )}
+                  placeholder="choose analytics type"
+                  // styles={styles}
+                  className="react-select-container "
+                  classNamePrefix="react-select"
+                  menuShouldScrollIntoView={true}
+                  onWheel={(e) => e.preventDefault()}
+                />
+                {/* <select
                   className="input-control werh"
                   name="analysisType"
                   onChange={handleChange}
@@ -278,7 +370,7 @@ const ShowAnswer = ({ onClose, disable, type }) => {
 
                   <option value="1" className="werh">Resolution</option>
                   <option value="2" className="werh">Purpose</option>
-                </select>
+                </select> */}
                 {showError(errors.analysisType, touched.analysisType)}
               </div>
 
@@ -294,12 +386,16 @@ const ShowAnswer = ({ onClose, disable, type }) => {
                       classNamePrefix="select"
                       name="analysisValue"
                       options={purposeOptions}
-                      onChange={(selectedOption) => setFieldValue('analysisValue', selectedOption?.value)}
+                      onChange={(selectedOption) =>
+                        setFieldValue("analysisValue", selectedOption?.value)
+                      }
                       onBlur={handleBlur}
-                      value={purposeOptions?.find(option => option.value === values.analysisValue)}
+                      value={purposeOptions?.find(
+                        (option) => option.value === values.analysisValue
+                      )}
                       isDisabled
                     />
-                  
+
                     {showError(errors.analysisValue, touched.analysisValue)}
                   </div>
                   {/* choose a data */}
@@ -320,6 +416,11 @@ const ShowAnswer = ({ onClose, disable, type }) => {
                         id="noOfDay"
                         // min={today}
                         disabled
+                        style={{
+                            background: type === "view" || "reply" ?"#f2f2f2":"",
+                            color: type === "view" || "reply" ?"#9d9d9d":"",
+                            border: type === "view" || "reply" ?"none":"",
+                          }}
                       />
                     </div>
                     {showError(errors.noOfDay, touched.noOfDay)}
@@ -329,32 +430,19 @@ const ShowAnswer = ({ onClose, disable, type }) => {
                     <label>
                       No. of hours<span>*</span>
                     </label>
-                    <select
-                      className="input-control"
+                    <Select
                       name="noOfDay"
-                      onChange={handleChange}
+                      options={ghanta}
+                      onChange={(selectedOption) =>
+                        setFieldValue("noOfDay", selectedOption?.value)
+                      }
                       onBlur={handleBlur}
-                      value={values?.noOfDay}
-                      disabled
-                    >
-                      <option value="" defaultValue>
-                        Select No. of hours
-                      </option>
-                      <>
-                        <option value="1 hours">1 hour</option>
-                        <option value="2 hours">2 hour</option>
-                        <option value="3 hours">3 hour</option>
-                        <option value="4 hours">4 hour</option>
-                        <option value="5 hours">5 hour</option>
-                        <option value="6 hours">6 hour</option>
-                        <option value="7 hours">7 hour</option>
-                        <option value="8 hours">8 hour</option>
-                        <option value="9 hours">9 hour</option>
-                        <option value="10 hours">10 hour</option>
-                        <option value="12 hours">12 hour</option>
-                      </>
-                      {showError(errors.noOfDay, touched.noOfDay)}
-                    </select>
+                      value={ghanta.find(
+                        (option) => option.value === values.noOfDay
+                      )}
+                      placeholder="Select No. of Hours"
+                      isDisabled
+                    />
                     {/* <Select
                       className="basic-single"
                       classNamePrefix="select"
@@ -374,7 +462,6 @@ const ShowAnswer = ({ onClose, disable, type }) => {
                       // onBlur={handleBlur}
                       // value={values?.noOfDay}
                     /> */}
-                
                   </div>
                 </>
               )}
@@ -389,13 +476,17 @@ const ShowAnswer = ({ onClose, disable, type }) => {
                       classNamePrefix="select"
                       name="analysisValue"
                       options={resolutionOptions}
-                      onChange={(selectedOptionq) => setFieldValue('analysisValue', selectedOptionq?.value)}
+                      onChange={(selectedOptionq) =>
+                        setFieldValue("analysisValue", selectedOptionq?.value)
+                      }
                       onBlur={handleBlur}
-                      value={resolutionOptions?.find(option => option.value === values.analysisValue)}
+                      value={resolutionOptions?.find(
+                        (option) => option.value === values.analysisValue
+                      )}
                       isDisabled
                       disabled
                     />
-                   
+
                     {showError(errors.analysisValue, touched.analysisValue)}
                   </div>
                   {/* choose a data */}
@@ -415,7 +506,11 @@ const ShowAnswer = ({ onClose, disable, type }) => {
                         disabled
                         // ref={dateInputRef}
                         id="noOfDay"
-                        
+                        style={{
+                            background: type === "view" || "reply" ?"#f2f2f2":"",
+                            color: type === "view" || "reply" ?"#9d9d9d":"",
+                            border: type === "view" || "reply" ?"none":"",
+                          }}
                         // min={today}
                       />
                     </div>
@@ -441,111 +536,105 @@ const ShowAnswer = ({ onClose, disable, type }) => {
                       // onBlur={handleBlur}
                       // value={values?.noOfDay}
                     /> */}
-                       <select
-                      className="input-control"
+                    <Select
                       name="noOfDay"
-                      onChange={handleChange}
+                      options={ghanta}
+                      onChange={(selectedOption) =>
+                        setFieldValue("noOfDay", selectedOption?.value)
+                      }
                       onBlur={handleBlur}
-                      value={values?.noOfDay}
-                      disabled
-                    >
-                      <option value="" defaultValue>
-                        Select No. of hours
-                      </option>
-                      <>
-                        <option value="1 hours">1 hour</option>
-                        <option value="2 hours">2 hour</option>
-                        <option value="3 hours">3 hour</option>
-                        <option value="4 hours">4 hour</option>
-                        <option value="5 hours">5 hour</option>
-                        <option value="6 hours">6 hour</option>
-                        <option value="7 hours">7 hour</option>
-                        <option value="8 hours">8 hour</option>
-                        <option value="9 hours">9 hour</option>
-                        <option value="10 hours">10 hour</option>
-                        <option value="12 hours">12 hour</option>
-                      </>
-                      {showError(errors.noOfDay, touched.noOfDay)}
-                    </select>
+                      value={ghanta.find(
+                        (option) => option.value === values.noOfDay
+                      )}
+                      placeholder="Select No. of Hours"
+                      isDisabled
+                    />
                   </div>
                 </>
               )}
 
-
-
-
-                  <div className=" col-md-12 mt-3 ">
+              <div className=" col-md-12 mt-3 ">
                 <div className="popupText">
                   <div class="row">
-                   <div class=" col-lg-1">
-                   Status: 
-                    </div>
+                    <div class=" col-lg-1">Status:</div>
                     <div class=" col-lg-2">
                       <div class="radio">
-                        <input id="radio1" name="status"  type="radio" value="0"
-                        checked={values?.status === '0'} onChange={handleStatusChange} disabled={type === 'view' ||  getRole() == "ROLE_ADMIN" ||
-                        getRole() == "ROLE_SUPPORT" ||
-                        getRole() == "ROLE_USER" ||
-                        getRole() == "ROLE_QA"}/>
+                        <input
+                          id="radio1"
+                          name="status"
+                          type="radio"
+                          value="0"
+                          checked={values?.status === "0"}
+                          onChange={handleStatusChange}
+                          disabled={
+                            type === "view" ||
+                            getRole() == "ROLE_ADMIN" ||
+                            getRole() == "ROLE_SUPPORT" ||
+                            getRole() == "ROLE_USER" ||
+                            getRole() == "ROLE_QA"
+                          }
+                        />
                         <label for="radio1">Pending</label>
                       </div>
                     </div>
                     <div class=" col-lg-2">
                       <div class="radio">
-                        <input id="radio2" name="status" type="radio" value="2"
-                        checked={values?.status === '2'} onChange={handleStatusChange} disabled={type === 'view' ||  getRole() == "ROLE_ADMIN" ||
-                        getRole() == "ROLE_SUPPORT" ||
-                        getRole() == "ROLE_USER" ||
-                        getRole() == "ROLE_QA"}/>
+                        <input
+                          id="radio2"
+                          name="status"
+                          type="radio"
+                          value="2"
+                          checked={values?.status === "2"}
+                          onChange={handleStatusChange}
+                          disabled={
+                            type === "view" ||
+                            getRole() == "ROLE_ADMIN" ||
+                            getRole() == "ROLE_SUPPORT" ||
+                            getRole() == "ROLE_USER" ||
+                            getRole() == "ROLE_QA"
+                          }
+                        />
                         <label for="radio2">Close</label>
                       </div>
                     </div>
                     <div class=" col-lg-2">
                       <div class="radio">
-                        <input id="radio3" name="status" type="radio" value="1"
-                        checked={values?.status === '1'} onChange={handleStatusChange} disabled={type === 'view' ||  getRole() == "ROLE_ADMIN" ||
-                        getRole() == "ROLE_SUPPORT" ||
-                        getRole() == "ROLE_USER" ||
-                        getRole() == "ROLE_QA"}/>
+                        <input
+                          id="radio3"
+                          name="status"
+                          type="radio"
+                          value="1"
+                          checked={values?.status === "1"}
+                          onChange={handleStatusChange}
+                          disabled={
+                            type === "view" ||
+                            getRole() == "ROLE_ADMIN" ||
+                            getRole() == "ROLE_SUPPORT" ||
+                            getRole() == "ROLE_USER" ||
+                            getRole() == "ROLE_QA"
+                          }
+                        />
                         <label for="radio3">Open</label>
                       </div>
                     </div>
-                    </div>
                   </div>
+                </div>
               </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              {userById.user?.answer?.length > 0 ? 
-              (<div className=" col-md-12 mt-4 ">
-                <div className="popupText">Comments:  </div>
-              </div>) :  (<div className=" col-md-12 mt-4 ">
-                <div className="popupText"></div>
-              </div>)
-              }
+              {userById.user?.answer?.length > 0 ? (
+                <div className=" col-md-12 mt-4 ">
+                  <div className="popupText">Comments: </div>
+                </div>
+              ) : (
+                <div className=" col-md-12 mt-4 ">
+                  <div className="popupText"></div>
+                </div>
+              )}
 
               {userById.user?.answer?.length === 0 ? (
-                    <div className=" col-md-12 mt-2 ">
-                  </div>
-                ):( userById.user?.answer?.map((a, i) => {
+                <div className=" col-md-12 mt-2 "></div>
+              ) : (
+                userById.user?.answer?.map((a, i) => {
                   return (
                     <>
                       <div className=" col-md-12 mt-2 ">
@@ -558,44 +647,61 @@ const ShowAnswer = ({ onClose, disable, type }) => {
                               : a?.answerType === "manager"
                               ? getInitials(values?.managerName)
                               : ""}
-                            <font className="online"></font></h4>
-                            <h3> {a.answerType === "associate"
-                            ? values?.agentName
-                            : a?.answerType === "team Lead"
-                            ? values?.tlName
-                            : a?.answerType === "manager"
-                            ? values?.managerName
-                            : ""}</h3> 
+                            <font className="online"></font>
+                          </h4>
+                          <h3>
+                            {" "}
+                            {a.answerType === "associate"
+                              ? values?.agentName
+                              : a?.answerType === "team Lead"
+                              ? values?.tlName
+                              : a?.answerType === "manager"
+                              ? values?.managerName
+                              : ""}
+                          </h3>
                         </div>
                       </div>
 
                       <div className=" col-md-12 mt-2 ">
                         <div className="popupCommentdec">
-                        <p dangerouslySetInnerHTML={{ __html: truncateHTML(a?.taskAnswer) }}></p>
+                          <p
+                            dangerouslySetInnerHTML={{
+                              __html: truncateHTML(a?.taskAnswer),
+                            }}
+                          ></p>
                         </div>
                       </div>
                     </>
-              );
-            })
-          )}
-              {type === 'reply' && canAnswer ? 
-              <div className=" col-md-12 mt-2 ">
-                <div className="">
+                  );
+                })
+              )}
+              {type === "reply" && canAnswer ? (
+                <div className=" col-md-12 mt-2 ">
+                  <div className="">
                     <TextEditor
-                    name="taskAnswer"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.taskAnswer}
-                    setFieldValue={setFieldValue} />
-                  {taskAnswerError && <div className="error-msg">{taskAnswerError}</div>}
+                      name="taskAnswer"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.taskAnswer}
+                      setFieldValue={setFieldValue}
+                    />
+                    {taskAnswerError && (
+                      <div className="error-msg">{taskAnswerError}</div>
+                    )}
+                  </div>
                 </div>
-              </div>
-              : ''}
+              ) : (
+                ""
+              )}
             </div>
           </div>
           {/* submit */}
           <div className="form-group aling-center-btn">
-            {!disable && canAnswer && (<button type="submit" className="btn btn-primary-big big-btn-padd">
+            {!disable && canAnswer && (
+              <button
+                type="submit"
+                className="btn btn-primary-big big-btn-padd"
+              >
                 Reply
               </button>
             )}

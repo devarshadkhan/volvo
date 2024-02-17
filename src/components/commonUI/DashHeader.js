@@ -160,7 +160,7 @@ const DashHeader = ({ setToggleMenu }) => {
             <img
               src={
                 u?.profileImage ||
-                `${process.env.PUBLIC_URL}/images/userIcon.svg`
+                `${process.env.PUBLIC_URL}/icons-images/Profileimage.png`
               }
               alt=""
             />

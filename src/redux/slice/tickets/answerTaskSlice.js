@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const answerTicketAction = createAsyncThunk(
   "answerTicket",
   async (data) => {
-    return await makeApiRequest(`/api/ticket/answer-task-question`, {
+    return await makeApiRequest(`${api.answerTicket}`, {
       token: getToken(),
       method: "POST",
       data,

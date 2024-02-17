@@ -31,4 +31,9 @@ export const api = {
 
     // Tickets 
     createTicket:"/api/ticket/create",
+    answerTicket:"/api/ticket/answer-task-question",
+    deleteTicket:"/api/user/delete-user",
+    getAllTickets:"/api/ticket/get-all-ticket",
+    getTicketById:"/api/ticket/get-ticket-details",
+    searchTickets:"/api/ticket/search-ticket"
 }

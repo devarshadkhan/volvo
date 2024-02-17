@@ -192,12 +192,17 @@ const Dashboard = () => {
                   <tr key={i}>
                   <td data-label="S.No">{serialNumber}</td>
                   <td data-label="Ticket No.">{item.ticketNo}</td>
-                  <td data-label="Question">{item.taskQuestion}</td>
-                  <td data-label="Agent">{item.agentName || "No Name"}</td>
-                  <td data-label="Team Leader ">{item.teamLeaderName || "No Name"}</td>
-                  <td data-label="Manager">{item.managerName}</td>
-                  <td data-label="Team">{item.teamName}</td>
-                  <td data-label="Start Date">{item.startDate}</td>
+                  {/* <td data-label="Question">{item.taskQuestion}</td> */}
+                  <td data-label="Name">
+                        {item.taskQuestion && item.taskQuestion.length > 15
+                          ? `${item.taskQuestion.substring(0, 15)}...`
+                          : item.taskQuestion}
+                      </td>
+                  <td data-label="Agent">{item.agentName || "N/A"}</td>
+                  <td data-label="Team Leader ">{item.teamLeaderName || "N/A"}</td>
+                  <td data-label="Manager">{item.managerName || "N/A"}</td>
+                  <td data-label="Team">{item.teamName || "N/A"}</td>
+                  <td data-label="Start Date">{item.startDate || "N/A"}</td>
                   <td data-label="Status" className="status-open">
                   {item.status === "1" ? "Open":""}
                     {/* <Switch /> */}

@@ -36,6 +36,7 @@ const searchUserSlice = createSlice({
         state.loading = false;
         state.success = true;
         state.error = "";
+        // notify(payload.message, "success");
         state.message = payload.message;
       })
       .addCase(searchUserAction.rejected, (state, { error }) => {

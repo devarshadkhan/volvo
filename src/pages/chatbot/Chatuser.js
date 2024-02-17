@@ -16,12 +16,12 @@ const Chatuser = () => {
                 <h2>
                   Chats{" "}
                   <span>
-                    <i class="fa-solid fa-chevron-down"></i>
+                    {/* <i class="fa-solid fa-chevron-down"></i> */}
                   </span>
                 </h2>
               </div>
 
-              <div className="col-6 right-text">
+              {/* <div className="col-6 right-text">
                 <Link to="/editchat">
                   <img
                     src={`${process.env.PUBLIC_URL}/icons-images/c-menu.png`}
@@ -37,7 +37,7 @@ const Chatuser = () => {
                     src={`${process.env.PUBLIC_URL}/icons-images/c-chat.png`}
                   />
                 </Link>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -201,9 +201,13 @@ const Chatuser = () => {
               <div className="col-6">
                 <NavLink to="/chatbot">
                   <button className="addcontact">
+                    <i class="fa fa-arrow-left"></i> <br />
+                    <span>Back</span>
+                  </button>
+                  {/* <button className="addcontact">
                     <i class="fa-solid fa-house"></i> <br />
                     <span>Dashboard</span>
-                  </button>
+                  </button> */}
                 </NavLink>
               </div>
               <div className="col-6">

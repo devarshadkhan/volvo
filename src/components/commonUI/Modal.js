@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "../../styles/UI.css";
 
-const Modal = ({ children, isOpen, setIsOpen, style }) => {
+const Modal = ({ children, isOpen, setIsOpen, style, onClose }) => {
   const overlayRef = useRef(null);
 
   const handleCloseOverlay = () => {
@@ -14,6 +14,7 @@ const Modal = ({ children, isOpen, setIsOpen, style }) => {
   //   const handleOutsideClick = (event) => {
   //     if (overlayRef.current && !overlayRef.current.contains(event.target)) {
   //       handleCloseOverlay();
+  //       onClose()
   //     }
   //   };
 

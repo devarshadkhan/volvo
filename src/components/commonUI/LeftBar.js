@@ -19,6 +19,8 @@ const LeftBar = ({ toggleMenu }) => {
     setActiveSubMenu(activeSubMenu === index ? null : index);
   };
 
+  console.log();
+
   
   return (
     <div className={toggleMenu ? "leftBar partialLeftBar" : "leftBar"}>

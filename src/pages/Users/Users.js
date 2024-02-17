@@ -17,7 +17,7 @@ import { convertToCSV, isPermitted, showError } from "../../utils/utils";
 import { userSearchSchema } from "../../utils/schema";
 import { useLocation } from "react-router-dom";
 
-const   Users = () => {
+const Users = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showUpdateDoctor, setShowUpdateDoctor] = useState(false);
@@ -51,7 +51,7 @@ const   Users = () => {
 
   useEffect(() => {
     if (values.searchValue || values.status || values.userType) {
-      dispatch(searchUserAction({ ...values  }));
+      dispatch(searchUserAction({ ...values }));
     } else {
       setTimeout(() => {
         dispatch(getAllUsersAction(pageNumber));
@@ -72,7 +72,7 @@ const   Users = () => {
   };
 
   const handleStatusChange = (value, id) => {
-    console.log("VALUE_______ID",value, id);
+    console.log("VALUE_______ID", value, id);
     dispatch(userStatusAction({ data: { status: value }, id }));
   };
 
@@ -108,7 +108,7 @@ const   Users = () => {
       initialValues,
       validationSchema: userSearchSchema,
       onSubmit: (data) => {
-        console.log("DATA",data);
+        console.log("DATA", data);
         let searchData;
         if (!data.searchValue && !data.status && !data.userType) {
           searchData = initialValues;
@@ -133,10 +133,10 @@ const   Users = () => {
           <div className="mid-head mar-20">
             <h2>Users</h2>
           </div>
-          
-            <form onSubmit={handleSubmit}>
-              <div className="row mar-20">
-                <div className=" col-lg-3 ">
+
+          <form onSubmit={handleSubmit}>
+            <div className="row mar-20">
+              <div className=" col-lg-3 ">
                 {isPermitted(permitted?.isSearch) && (
                   <div className="form-group ">
                     <input
@@ -147,13 +147,12 @@ const   Users = () => {
                       onChange={handleChange}
                       value={values.searchValue}
                     />
-                    {showError(errors.searchValue, touched.searchValue)}
+                    {/* {showError(errors.searchValue, touched.searchValue)} */}
                   </div>
-                    )}
-                </div>
-            
-             
-                <div className=" col-lg-3 ">
+                )}
+              </div>
+
+              <div className=" col-lg-3 ">
                 {isPermitted(permitted?.isSearch) && (
                   <div className="form-group ">
                     <select
@@ -172,22 +171,37 @@ const   Users = () => {
                       <option value="QA">QA</option>
                       <option value="manager">Manager</option>
                       <option value="admin">Admin</option> */}
-
-                    {(userByToken.user?.role  == 'admin' || userByToken.user?.role  == 'user') &&<option value="user">User</option>}
-                    {(userByToken.user?.role  == 'admin' || userByToken.user?.role  == 'user' || userByToken.user?.role  == 'manager' ||userByToken.user?.role  == 'associate' || userByToken.user?.role  == 'team Lead') &&<option value="associate">Associate</option> }
-                    {(userByToken.user?.role  == 'admin' || userByToken.user?.role  == 'user' || userByToken.user?.role  == 'manager') &&<option value="team Lead">Team Lead</option>}
-                    {/* <option value="QA">QA</option> */}
-                    {(userByToken.user?.role  == 'admin' || userByToken.user?.role  == 'user') &&<option value="manager">Manager</option>}
-                    {(userByToken.user?.role  == 'admin' || userByToken.user?.role  == 'user') &&<option value="admin">Admin</option>}
-
-
+                      {(userByToken.user?.role == "admin" ||
+                        userByToken.user?.role == "user") && (
+                        <option value="user">User</option>
+                      )}
+                      {(userByToken.user?.role == "admin" ||
+                        userByToken.user?.role == "user" ||
+                        userByToken.user?.role == "manager" ||
+                        userByToken.user?.role == "associate" ||
+                        userByToken.user?.role == "team Lead") && (
+                        <option value="associate">Associate</option>
+                      )}
+                      {(userByToken.user?.role == "admin" ||
+                        userByToken.user?.role == "user" ||
+                        userByToken.user?.role == "manager") && (
+                        <option value="team Lead">Team Lead</option>
+                      )}
+                      {/* <option value="QA">QA</option> */}
+                      {(userByToken.user?.role == "admin" ||
+                        userByToken.user?.role == "user") && (
+                        <option value="manager">Manager</option>
+                      )}
+                      {(userByToken.user?.role == "admin" ||
+                        userByToken.user?.role == "user") && (
+                        <option value="admin">Admin</option>
+                      )}
                     </select>
                   </div>
-                   )}
-                </div>
-             
-           
-                <div className=" col-lg-2">
+                )}
+              </div>
+
+              <div className=" col-lg-2">
                 {isPermitted(permitted?.isSearch) && (
                   <div className="form-group ">
                     <select
@@ -204,11 +218,10 @@ const   Users = () => {
                       <option value="1">Active</option>
                     </select>
                   </div>
-                   )}
-                </div>
-             
-            
-                <div className=" col-lg-2 col-5">
+                )}
+              </div>
+
+              <div className=" col-lg-2 col-5">
                 {isPermitted(permitted?.isSearch) && (
                   <div className="form-group ">
                     <button className=" btn-md btn-md-blue" type="submit">
@@ -226,44 +239,43 @@ const   Users = () => {
                       <i className="fa-solid fa-rotate-right"></i>
                     </button>
                   </div>
-                    )}  
-                </div>
-                <div className=" col-lg-2 col-7">
-                  <div className="aling-right bflex">
-                    {isPermitted(permitted?.isCsv) && (
-                      <button
-                        className=" btn-md btn-md-blue"
-                        onClick={() => {
-                          setForCSV(true);
-                          dispatch(searchCSVUsersAction(values));
-                        }}
-                        type="button"
-                      >
-                        <i
-                          class="fa-solid fa-file-csv"
-                          style={{ fontSize: "21px" }}
-                        ></i>
-                      </button>
-                    )}
-                    {isPermitted(permitted?.isAdd) && (
-                      <button
-                        to="/doctors/add-doctor"
-                        className=" btn-md btn-md-blue"
-                        type="button"
-                        onClick={() => setIsOpen(true)}
-                      >
-                        <img
-                          src={`${process.env.PUBLIC_URL}/icons-images/plus.svg`}
-                          alt="icon"
-                        />
-                        Add User
-                      </button>
-                    )}
-                  </div>
+                )}
+              </div>
+              <div className=" col-lg-2 col-7">
+                <div className="aling-right bflex">
+                  {isPermitted(permitted?.isCsv) && (
+                    <button
+                      className=" btn-md btn-md-blue"
+                      onClick={() => {
+                        setForCSV(true);
+                        dispatch(searchCSVUsersAction(values));
+                      }}
+                      type="button"
+                    >
+                      <i
+                        class="fa-solid fa-file-csv"
+                        style={{ fontSize: "21px" }}
+                      ></i>
+                    </button>
+                  )}
+                  {isPermitted(permitted?.isAdd) && (
+                    <button
+                      to="/doctors/add-doctor"
+                      className=" btn-md btn-md-blue"
+                      type="button"
+                      onClick={() => setIsOpen(true)}
+                    >
+                      <img
+                        src={`${process.env.PUBLIC_URL}/icons-images/plus.svg`}
+                        alt="icon"
+                      />
+                      Add User
+                    </button>
+                  )}
                 </div>
               </div>
-            </form>
-          
+            </div>
+          </form>
 
           <div className="mid-table ">
             <table
@@ -306,7 +318,15 @@ const   Users = () => {
                       <tr key={index}>
                         <td data-label="S.No">{serialNumber}</td>
                         <td data-label="Name">
-                          {user.fname + " " + user.lname}
+                          {/* {user.fname + " " + user.lname} */}
+                          {user?.fname &&
+                          user?.lname &&
+                          (user?.fname.length > 10 || user?.lname.length > 10)
+                            ? `${user?.fname.substring(
+                                0,
+                                10
+                              )}...${user?.lname.substring(0, 10)}...`
+                            : `${user?.fname} ${user?.lname}`}
                         </td>
                         <td data-label="UUID">{user?.uuid}</td>
                         <td data-label="Email">{user.email}</td>

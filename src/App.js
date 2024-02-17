@@ -73,7 +73,7 @@ function App() {
               <Route path="/ticketing" element={<Tickets />} />
 
               <Route path="/ai" element={<AI />} />
-            <Route path="/analytics" element={<Analytics />} />
+              <Route path="/analytics" element={<Analytics />} />
             </Route>
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/chatuser" element={<Chatuser />} />

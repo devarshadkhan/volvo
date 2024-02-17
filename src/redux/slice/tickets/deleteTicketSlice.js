@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const deleteTicketAction = createAsyncThunk(
   "deleteTicket",
   async (id) => {
-    return await makeApiRequest(`/api/user/delete-user?userId=${id}`, {
+    return await makeApiRequest(`${api.deleteTicket}?userId=${id}`, {
       token: getToken(),
       method: "DELETE",
     });

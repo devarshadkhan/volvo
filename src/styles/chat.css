@@ -371,6 +371,7 @@
   margin: 0 auto;
   position: relative;
   display: flex;
+  /* align-items: center; */
   gap: 15px;
 }
 
@@ -411,7 +412,7 @@
 
 .frame .sidepanel .contacts ul li.contact .wrap .meta {
   padding: 0px 0 0 0;
-  display: flex;
+  /* display: flex; */
   flex-wrap: wrap;
   align-items: center;
 }
@@ -561,6 +562,15 @@
   border-radius: 50%;
   border: 1px solid #fff;
   background: red;
+  /* position: absolute;
+  left: 6px;
+  margin: 15px 0 0 11px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  background: red;
+  top: -13px; */
 }
 
 .frame .content .contact-profile .social-media {
@@ -1965,6 +1975,24 @@
 }
 
 .firstLetter p{margin: 0;color: #fff; font-weight: 900;}
+.firstLettermm{
+  background: rgb(65, 62, 62);
+  /* display: inline-block; */
+  /* padding: 13px; */
+  border-radius: 50%;
+  height: 45px;
+  width: 45px;
+  text-align: center;
+
+    border-radius: 50%;
+    float: left;
+    margin: 9px 12px 0 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.firstLettermm p{margin: 0;color: #fff; font-weight: 900;}
 
 
 

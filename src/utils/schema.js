@@ -186,26 +186,7 @@ export const updateUserSchema = Yup.object({
   profileImage: validImage,
 });
 
-export const userSearchSchema = Yup.object()
-  .shape({
-    searchValue: Yup.string().min(3, "Please enter atleast 3 characters"),
-    userType: Yup.string(),
-    status: Yup.string(),
-  })
-  .test(
-    "has-at-least-one-value",
-    "At least one field must have a value",
-    function (value) {
-      const { searchValue, userType, status } = value;
-      if (!searchValue && !userType && !status) {
-        return this.createError({
-          path: "searchValue",
-          message: "At least one field must have a value",
-        });
-      }
-      return true;
-    }
-);
+
 
 export const ticketSearchSchema = Yup.object()
   .shape({
@@ -284,8 +265,8 @@ export function addTicketSchema() {
       teamId: Yup.string().required("Please select a team"),
       managerId: Yup.string().required("Please select a manager"),
       status: Yup.string().required("Please select status"),
-      analysisType: Yup.string().required("Please select analysis type"),
-      analysisValue: Yup.string().required("Please select analysis type"),
+      analysisType: Yup.string().required("Please select analytics type"),
+      analysisValue: Yup.string().required("Please select analytics value"),
       noOfDay: Yup.string().required("Please select one value either date and hours"),
     
     });
@@ -300,8 +281,8 @@ export function addTicketSchema() {
       managerId: Yup.string().required("Please select a manager"),
       teamId: Yup.string().required("Please select a team"),
       status: Yup.string().required("Please select status"),
-      analysisType: Yup.string().required("Please select analysis type"),
-      analysisValue: Yup.string().required("Please select analysis type"),
+      analysisType: Yup.string().required("Please select analytics type"),
+      analysisValue: Yup.string().required("Please select analytics value"),
       noOfDay: Yup.string().required("Please select one value either date and hours"),
     });
   } else if (role === "ROLE_TEAM LEAD") {
@@ -316,8 +297,8 @@ export function addTicketSchema() {
       tlId: Yup.string().required("Please select a team lead"),
       agentId: Yup.string().required("Please select an agent"),
       status: Yup.string().required("Please select status"),
-      analysisType: Yup.string().required("Please select analysis type"),
-      analysisValue: Yup.string().required("Please select analysis type"),
+      analysisType: Yup.string().required("Please select analytics type"),
+      analysisValue: Yup.string().required("Please select analytics value"),
       noOfDay: Yup.string().required("Please select one value either date and hours"),
     });
   } else if (role === "ROLE_ASSOCIATE") {
@@ -332,8 +313,8 @@ export function addTicketSchema() {
       agentId: Yup.string().required("Please select an agent"),
       tlId: Yup.string().required("Please select a team lead"),
       status: Yup.string().required("Please select status"),
-      analysisType: Yup.string().required("Please select analysis type"),
-      analysisValue: Yup.string().required("Please select analysis type"),
+      analysisType: Yup.string().required("Please select analytics type"),
+      analysisValue: Yup.string().required("Please select analytics value"),
       noOfDay: Yup.string().required("Please select one value either date and hours"),
     });
   } else {
@@ -343,7 +324,14 @@ export function addTicketSchema() {
         .trim("Space are not allowed at start and end")
         .strict(true)
         .required("Please enter question"),
-      status: Yup.string().required("Please select status"),
+        teamId: Yup.string().required("Please select a team"),
+        managerId: Yup.string().required("Please select a manager"),
+        agentId: Yup.string().required("Please select an agent"),
+        tlId: Yup.string().required("Please select a team lead"),
+        status: Yup.string().required("Please select status"),
+        analysisType: Yup.string().required("Please select analytics type"),
+        analysisValue: Yup.string().required("Please select analytics value"),
+        // noOfDay: Yup.string().required("Please select one value either date and hours"),
       noOfDay: Yup.string().required("Please select one value either date and hours"),
     });
   }
@@ -423,18 +411,45 @@ export const analysisSearchSchema = Yup.object()
       return true;
     }
 );
+export const userSearchSchema = Yup.object()
+  .shape({
+    searchValue: Yup.string().min(3, "Please enter atleast 3 characters"),
+    userType: Yup.string(),
+    status: Yup.string(),
+  })
+  .test(
+    "has-at-least-one-value",
+    "At least one field must have a value",
+    function (value) {
+      const { searchValue, userType, status } = value;
+      if (!searchValue && !userType && !status) {
+        return this.createError({
+          path: "searchValue",
+          message: notify("At least one field must have a value","error"),
+        });
+      }
+      return true;
+    }
+);
 
 
 
-
-
-
-
-
-
-
-
-
+export const AddAnaliticsSchema = Yup.object({
+  name: Yup
+    .string("Enter your Analytics name")
+    .trim("Space are not allowed at start and end")
+    .strict(true)
+    .required("Analytics name is required"),
+  analysisType: Yup
+    .string("Select Analytics Type")
+    .trim("Space are not allowed at start and end")
+    .strict(true)
+    .required("Analytics type is required"),
+  status: Yup
+    .string("Select Status")
+    .trim("Space are not allowed at start and end")
+    .required("Status is required"),
+});
 
 
 
@@ -783,8 +798,8 @@ export const analysisSearchSchema = Yup.object()
 //       teamId: Yup.string().required("Please select a team"),
 //       managerId: Yup.string().required("Please select a manager"),
 //       status: Yup.string().required("Please select status"),
-//       analysisType: Yup.string().required("Please select analysis type"),
-//       analysisValue: Yup.string().required("Please select analysis type"),
+//       analysisType: Yup.string().required("Please select analyticstype"),
+//       analysisValue: Yup.string().required("Please select analyticstype"),
 //       // noOfDay: Yup.string().required("Please select one value date and hour"),
 //       noOfDay: Yup.string().required("Please select one value date and hour"),
 //       // noOfHour: Yup.string().required("Please select one value date and hour"),
@@ -801,8 +816,8 @@ export const analysisSearchSchema = Yup.object()
 //       managerId: Yup.string().required("Please select a manager"),
 //       teamId: Yup.string().required("Please select a team"),
 //       status: Yup.string().required("Please select status"),
-//       analysisType: Yup.string().required("Please select analysis type"),
-//       analysisValue: Yup.string().required("Please select analysis type"),
+//       analysisType: Yup.string().required("Please select analyticstype"),
+//       analysisValue: Yup.string().required("Please select analyticstype"),
 //       noOfDay: Yup.string().required("Please select one value date and hour"),
 //     });
 //   } else if (role === "ROLE_TEAM LEAD") {
@@ -817,8 +832,8 @@ export const analysisSearchSchema = Yup.object()
 //       tlId: Yup.string().required("Please select a team lead"),
 //       agentId: Yup.string().required("Please select an agent"),
 //       status: Yup.string().required("Please select status"),
-//       analysisType: Yup.string().required("Please select analysis type"),
-//       analysisValue: Yup.string().required("Please select analysis type"),
+//       analysisType: Yup.string().required("Please select analyticstype"),
+//       analysisValue: Yup.string().required("Please select analyticstype"),
 //       noOfDay: Yup.string().required("Please select one value date and hour"),
 //     });
 //   } else if (role === "ROLE_ASSOCIATE") {
@@ -833,8 +848,8 @@ export const analysisSearchSchema = Yup.object()
 //       agentId: Yup.string().required("Please select an agent"),
 //       tlId: Yup.string().required("Please select a team lead"),
 //       status: Yup.string().required("Please select status"),
-//       analysisType: Yup.string().required("Please select analysis type"),
-//       analysisValue: Yup.string().required("Please select analysis type"),
+//       analysisType: Yup.string().required("Please select analyticstype"),
+//       analysisValue: Yup.string().required("Please select analyticstype"),
 //       noOfDay: Yup.string().required("Please select one value date and hour"),
 //     });
 //   } else {
@@ -845,8 +860,8 @@ export const analysisSearchSchema = Yup.object()
 //         .strict(true)
 //         .required("Please enter question"),
 //       status: Yup.string().required("Please select status"),
-//       analysisType: Yup.string().required("Please select analysis type"),
-//       analysisValue: Yup.string().required("Please select analysis type"),
+//       analysisType: Yup.string().required("Please select analyticstype"),
+//       analysisValue: Yup.string().required("Please select analyticstype"),
 //       noOfDay: Yup.string().required("Please select one value date and hour"),
 //     });
 //   }
@@ -860,8 +875,8 @@ export const analysisSearchSchema = Yup.object()
 // //       .strict(true)
 // //       .required("Please enter a question"),
 // //     status: Yup.string().required("Please select status"),
-// //     analysisType: Yup.string().required("Please select analysis type"),
-// //     analysisValue: Yup.string().required("Please select analysis type"),
+// //     analysisType: Yup.string().required("Please select analyticstype"),
+// //     analysisValue: Yup.string().required("Please select analyticstype"),
 // //   };
 
 // //   const dateAndHourSchema = {
@@ -949,8 +964,8 @@ export const analysisSearchSchema = Yup.object()
 // //       .strict(true)
 // //       .required("Please enter a question"),
 // //     status: Yup.string().required("Please select status"),
-// //     analysisType: Yup.string().required("Please select analysis type"),
-// //     analysisValue: Yup.string().required("Please select analysis type"),
+// //     analysisType: Yup.string().required("Please select analyticstype"),
+// //     analysisValue: Yup.string().required("Please select analyticstype"),
 // //   };
 
 // //   const dateAndHourSchema = {

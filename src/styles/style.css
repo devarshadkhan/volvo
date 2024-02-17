@@ -49,6 +49,7 @@ a:focus {
 
 .doctor-wrapper {
   background: white;
+  overflow: auto;
 }
 
 .doctors {
@@ -382,6 +383,7 @@ a:focus {
 .add-Btn {
   margin-top: 6px;
   float: right;
+  white-space: nowrap;
 }
 
 .col-Padd {
@@ -516,10 +518,10 @@ select {
   box-sizing: border-box;
 }
 
-.css-1nmdiq5-menu {
+/* .css-1nmdiq5-menu {
   height: 130px;
   overflow: auto;
-}
+} */
 
 .css-16xfy0z-control {
 
@@ -732,6 +734,13 @@ select {
   font-weight: 600;
 }
 
+@media only screen and (max-width: 1024px) {
+  .btn-mar {
+    margin-top: 15px;
+
+  }
+}
+
 @media only screen and (max-width: 767px) {
   .graphBox {
     flex-direction: column;
@@ -741,6 +750,8 @@ select {
 
     padding-bottom: 10px;
   }
+
+
 }
 
 /* ........ticket Dashboard End........ */

@@ -22,57 +22,9 @@ import { answerTicketAction } from "../../redux/slice/tickets/answerTaskSlice";
 import { getAllAgentsAction } from "../../redux/slice/forForms/getAllAgentsSlice";
 import { getAnalysisByTypePurposeAPI } from "../../redux/slice/analysis/getAnalysisbyTypePurposeSlice";
 import { getAnalysisByTypeResolutionAPI } from "../../redux/slice/analysis/getAnalysisbyTypeResolutionSlice";
+import { hourData } from "../../utils/mockData";
+import { getAnalysisType } from "../../redux/slice/analysis/analysisType";
 
-const hourData = [
-  {
-    id: 1,
-    name: "1 hour",
-  },
-  {
-    id: 2,
-    name: "2 hour",
-  },
-  {
-    id: 3,
-    name: "3 hour",
-  },
-  {
-    id: 4,
-    name: "4 hour",
-  },
-  {
-    id: 5,
-    name: "5 hour",
-  },
-  {
-    id: 6,
-    name: "6 hour",
-  },
-  {
-    id: 7,
-    name: "7 hour",
-  },
-  {
-    id: 8,
-    name: "8 hour",
-  },
-  {
-    id: 9,
-    name: "9 hour",
-  },
-  {
-    id: 10,
-    name: "10 hour",
-  },
-  {
-    id: 11,
-    name: "11 hour",
-  },
-  {
-    id: 12,
-    name: "12 hour",
-  },
-];
 const AddUserForm = ({ onClose, disable, type }) => {
   const [success, setSuccess] = useState(false);
   const [routeFlag, setRouteFlag] = useState(false);
@@ -112,7 +64,10 @@ const AddUserForm = ({ onClose, disable, type }) => {
   const TLs = useSelector((state) => state.TLs);
   const allAgents = useSelector((state) => state.allAgents);
   const userByToken = useSelector((state) => state.userByToken);
-
+  const getAnalyticsType = useSelector(
+    (state) => state.analysisType.analysisData.data
+  );
+  console.log(getAnalyticsType);
   // Analysis state in write code Arshad Pathaan
   const getAnalysisByTypePurpose = useSelector(
     (state) =>
@@ -126,20 +81,33 @@ const AddUserForm = ({ onClose, disable, type }) => {
   );
   const [purposeOptions, setPurposeOptions] = useState([]);
   const [resolutionOptions, setResolutionOptions] = useState([]);
+  const [analyticsTypeOption, setAnalyticsTypeOption] = useState([]);
   useEffect(() => {
     dispatch(getAnalysisByTypePurposeAPI());
     dispatch(getAnalysisByTypeResolutionAPI());
+    dispatch(getAnalysisType());
   }, []);
 
+  useEffect(() => {
+    setAnalyticsTypeOption(
+      getAnalyticsType?.map((item) => {
+        console.log(item);
+        return {
+          value: item?.name,
+          label: item?.name,
+        };
+      })
+    );
+  }, [getAnalyticsType]);
   useEffect(() => {
     setPurposeOptions(
       getAnalysisByTypePurpose?.map((item) => {
         return {
           value: item?.name,
           label: item?.name,
-        }
-      }))
-    
+        };
+      })
+    );
   }, [getAnalysisByTypePurpose]);
 
   useEffect(() => {
@@ -148,10 +116,23 @@ const AddUserForm = ({ onClose, disable, type }) => {
         return {
           value: item?.name,
           label: item?.name,
-        }
-      }))
-    
+        };
+      })
+    );
   }, [getAnalysisByTypeResolution]);
+
+  const [ghanta, setGhanta] = useState(hourData);
+
+  useEffect(() => {
+    setGhanta(
+      ghanta.map((item) => {
+        return {
+          value: item?.name,
+          label: item?.name,
+        };
+      })
+    );
+  }, []);
 
   useEffect(() => {
     if (userById.success) {
@@ -203,12 +184,6 @@ const AddUserForm = ({ onClose, disable, type }) => {
     validationSchema: addTicketSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
-      console.log("VVV", values);
-      const formData = new FormData();
-      // const convertedDate = values.noOfDay ? convertDateFormat(values.noOfDay) : "";
-
-      // newValues.noOfDay = convertedDate;
-
       const newValues = {
         ...values,
         teamId: values.teamId || "",
@@ -219,12 +194,11 @@ const AddUserForm = ({ onClose, disable, type }) => {
         analysisType: values.analysisType || "",
         analysisValue: values.analysisValue || "",
         noOfDay: values.noOfDay || "",
-        // noOfDay: convertDateFormat(values.noOfDay) || "",
       };
 
       if (type === "add") {
         dispatch(addTicketAction(newValues));
-        resetForm();
+        // resetForm();
         // onClose()
       } else if (type === "update") {
         dispatch(updateTicketAction({ id: values.ticketNo, data: newValues }));
@@ -298,7 +272,18 @@ const AddUserForm = ({ onClose, disable, type }) => {
   const style = {
     control: (provided) => ({
       ...provided,
+      // height: "44px",
+    }),
+  };
+
+  const styles = {
+    option: (provided, state) => ({
+      ...provided,
+      color: "black",
       height: "44px",
+    }),
+    singleValue: (provided, state) => ({
+      ...provided,
     }),
   };
 
@@ -343,8 +328,11 @@ const AddUserForm = ({ onClose, disable, type }) => {
                     getRole() === "ROLE_ASSOCIATE" ||
                     getRole() === "ROLE_TEAM LEAD"
                   }
+                  onBlur={handleBlur}
                   onChange={(selectedOptions) => {
-                    setFieldValue("teamId", selectedOptions.value);
+                    console.log("Selected Team:", selectedOptions);
+                    setFieldValue("teamId", selectedOptions?.value);
+                    // setFieldValue("teamId", selectedOptions.value);
                     if (getRole() == "ROLE_ASSOCIATE") {
                       setFieldValue("managerId", "");
                       setFieldValue("tlId", "");
@@ -408,7 +396,7 @@ const AddUserForm = ({ onClose, disable, type }) => {
                     getRole() === "ROLE_MANAGER"
                   }
                   onChange={(selectedOptions) => {
-                    setFieldValue("managerId", selectedOptions.value);
+                    setFieldValue("managerId", selectedOptions?.value);
                     if (getRole() == "ROLE_ASSOCIATE") {
                       setFieldValue("tlId", "");
                       setFieldValue("agentId", "");
@@ -517,7 +505,7 @@ const AddUserForm = ({ onClose, disable, type }) => {
               </div>
 
               {type === "update" && (
-                <div className=" col-md-12 mb-2 ">
+                <div className=" col-md-6 mb-2 ">
                   <label>
                     {" "}
                     Status<span>*</span>
@@ -541,9 +529,46 @@ const AddUserForm = ({ onClose, disable, type }) => {
 
               <div className="col-md-6 mb-2">
                 <label>
-                Analytics Type<span>*</span>
+                  Analytics Type<span>*</span>
                 </label>
-                <select
+                <Select
+                  name="analysisType"
+                  // options={analyticsTypeOption}
+                  options={[
+                    { value: "", label: "Choose analytics type" },
+                    { value: "1", label: "Resolution" },
+                    { value: "2", label: "Purpose" },
+                  ]}
+                  onChange={(selectedOption) =>
+                    setFieldValue("analysisType", selectedOption?.value)
+                  }
+                  onBlur={handleBlur}
+                  value={{
+                    value: values.analysisType || "",
+                    label:
+                      values.analysisType === "1" || values.analysisType === "2"
+                        ? values.analysisType === "1"
+                          ? "Resolution"
+                          : "Purpose"
+                        : "Choose analytics type",
+                  }}
+                  // value={{
+                  //   value: values.analysisType || "",
+                  //   label:
+                  //     values.analysisType === "1" ? "Resolution" : "Purpose",
+                  // }}
+                  // value={analyticsTypeOption?.find(
+                  //   (option) => option.value === values.analysisType
+                  // )}
+                  placeholder="choose analytics type"
+                  // styles={styles}
+                  className="react-select-container "
+                  classNamePrefix="react-select"
+                  menuShouldScrollIntoView={true}
+                  onWheel={(e) => e.preventDefault()}
+                  isDisabled={type === "update" ? isDisabled : ""}
+                />
+                {/* <select
                   className="input-control"
                   name="analysisType"
                   onChange={handleChange}
@@ -554,7 +579,7 @@ const AddUserForm = ({ onClose, disable, type }) => {
 
                   <option value="1">Resolution</option>
                   <option value="2">Purpose</option>
-                </select>
+                </select> */}
                 {showError(errors.analysisType, touched.analysisType)}
               </div>
 
@@ -562,19 +587,29 @@ const AddUserForm = ({ onClose, disable, type }) => {
                 <>
                   <div className="col-md-6 mb-2">
                     <label>
-                      Purpose Type<span>*</span>
+                      {/* Analytics <span>*</span> */}
+                      Purpose <span>*</span>
                     </label>
 
                     <Select
-                      className="basic-single"
-                      classNamePrefix="select"
                       name="analysisValue"
                       options={purposeOptions}
-                      onChange={(selectedOption) => setFieldValue('analysisValue', selectedOption?.value)}
+                      onChange={(selectedOption) =>
+                        setFieldValue("analysisValue", selectedOption?.value)
+                      }
                       onBlur={handleBlur}
-                      value={purposeOptions?.find(option => option.value === values.analysisValue)}
+                      value={purposeOptions?.find(
+                        (option) => option.value === values.analysisValue
+                      )}
+                      placeholder="Purpose type"
+                      styles={styles}
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                      menuShouldScrollIntoView={true}
+                      onWheel={(e) => e.preventDefault()}
+                      isDisabled={type === "update" ? isDisabled : ""}
                     />
-                  
+
                     {showError(errors.analysisValue, touched.analysisValue)}
                   </div>
                   {/* choose a data */}
@@ -594,6 +629,11 @@ const AddUserForm = ({ onClose, disable, type }) => {
                         // ref={dateInputRef}
                         id="noOfDay"
                         min={today}
+                        disabled={type === "update" ? isDisabled : ""}
+                        style={{
+                          background: type === "update" ? "#f2f2f2" : "",
+                          color: type === "update" ? "#9d9d9d" : "",
+                        }}
                       />
                     </div>
                     {showError(errors.noOfDay, touched.noOfDay)}
@@ -603,7 +643,20 @@ const AddUserForm = ({ onClose, disable, type }) => {
                     <label>
                       No. of hours<span>*</span>
                     </label>
-                    <select
+                    <Select
+                      name="noOfDay"
+                      options={ghanta}
+                      onChange={(selectedOption) =>
+                        setFieldValue("noOfDay", selectedOption?.value)
+                      }
+                      onBlur={handleBlur}
+                      value={ghanta.find(
+                        (option) => option.value === values.noOfDay
+                      )}
+                      placeholder="Select No. of Hours"
+                      isDisabled={type === "update" ? isDisabled : ""}
+                    />
+                    {/* <select
                       className="input-control"
                       name="noOfDay"
                       onChange={handleChange}
@@ -627,7 +680,7 @@ const AddUserForm = ({ onClose, disable, type }) => {
                         <option value="12 hours">12 hour</option>
                       </>
                       {showError(errors.noOfDay, touched.noOfDay)}
-                    </select>
+                    </select> */}
                     {/* <Select
                       className="basic-single"
                       classNamePrefix="select"
@@ -647,26 +700,37 @@ const AddUserForm = ({ onClose, disable, type }) => {
                       // onBlur={handleBlur}
                       // value={values?.noOfDay}
                     /> */}
-                
+                    {/* {showError(errors.noOfDay, touched.noOfDay)} */}
                   </div>
                 </>
               )}
               {values.analysisType === "1" && (
                 <>
-                  <div className="col-md-6 mb-2">
+                  <div
+                    className="col-md-6 mb-2"
+                    onWheel={(e) => e.preventDefault()}
+                  >
                     <label>
-                      Resolution Type<span>*</span>
+                      Resolution <span>*</span>
                     </label>
                     <Select
-                      className="basic-single"
-                      classNamePrefix="select"
+                      placeholder="Resolution type"
                       name="analysisValue"
                       options={resolutionOptions}
-                      onChange={(selectedOptionq) => setFieldValue('analysisValue', selectedOptionq?.value)}
+                      onChange={(selectedOptionq) =>
+                        setFieldValue("analysisValue", selectedOptionq?.value)
+                      }
                       onBlur={handleBlur}
-                      value={resolutionOptions?.find(option => option.value === values.analysisValue)}
+                      value={resolutionOptions?.find(
+                        (option) => option.value === values.analysisValue
+                      )}
+                      styles={style}
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                      onWheel={(e) => e.preventDefault()}
+                      isDisabled={type === "update" ? isDisabled : ""}
                     />
-                   
+
                     {showError(errors.analysisValue, touched.analysisValue)}
                   </div>
                   {/* choose a data */}
@@ -683,10 +747,15 @@ const AddUserForm = ({ onClose, disable, type }) => {
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values?.noOfDay}
-                        disabled={disable}
+                        // disabled={disable}
                         // ref={dateInputRef}
                         id="noOfDay"
                         min={today}
+                        disabled={type === "update" ? isDisabled : ""}
+                        style={{
+                          background: type === "update" ? "#f2f2f2" : "",
+                          color: type === "update" ? "#9d9d9d" : "",
+                        }}
                       />
                     </div>
                     {showError(errors.noOfDay, touched.noOfDay)}
@@ -697,8 +766,8 @@ const AddUserForm = ({ onClose, disable, type }) => {
                       No. of hours<span>*</span>
                     </label>
                     {/* <Select
-                      className="basic-single"
-                      classNamePrefix="select"
+                      // className="basic-single"
+                      // classNamePrefix="select"
                       name="noOfDay"
                       options={hourData.map((item) => ({
                         value: item.name,
@@ -706,12 +775,25 @@ const AddUserForm = ({ onClose, disable, type }) => {
                       }))}
                       onChange={(selectedOption) => setFieldValue('noOfDay', selectedOption?.value)}
                       onBlur={handleBlur}
-                      value={hourData.find(option => option.name === values.noOfDay)}
+                      value={hourData?.find(option => option.name === values.noOfDay)}
                       // onChange={handleChange}
                       // onBlur={handleBlur}
                       // value={values?.noOfDay}
                     /> */}
-                       <select
+                    <Select
+                      name="noOfDay"
+                      options={ghanta}
+                      onChange={(selectedOption) =>
+                        setFieldValue("noOfDay", selectedOption?.value)
+                      }
+                      onBlur={handleBlur}
+                      value={ghanta.find(
+                        (option) => option.value === values.noOfDay
+                      )}
+                      placeholder="Select No. of Hours"
+                      isDisabled={type === "update" ? isDisabled : ""}
+                    />
+                    {/* <select
                       className="input-control"
                       name="noOfDay"
                       onChange={handleChange}
@@ -735,7 +817,8 @@ const AddUserForm = ({ onClose, disable, type }) => {
                         <option value="12 hours">12 hour</option>
                       </>
                       {showError(errors.noOfDay, touched.noOfDay)}
-                    </select>
+                    </select> */}
+                    {/* {showError(errors.noOfDay, touched.noOfDay)} */}
                   </div>
                 </>
               )}

@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getToken, makeApiRequest, notify } from "../../../utils/utils";
+import { api } from "../../../network-request/api";
 
 export const getTicketByIdAction = createAsyncThunk(
   "getTicketById",
   async (id) => {
     return await makeApiRequest(
-      `/api/ticket/get-ticket-details?ticketId=${id?.replace("#", "%23")}`,
+      `${api.getTicketById}?ticketId=${id?.replace("#", "%23")}`,
       {
         token: getToken(),
         method: "GET",

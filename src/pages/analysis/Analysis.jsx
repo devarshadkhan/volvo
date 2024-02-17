@@ -6,7 +6,11 @@ import AddAnalysis from "./AddAnalysis.jsx";
 import { useLocation, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAnalysisDataListing } from "../../redux/slice/analysis/getAllAnalysisSlice.js";
-import { convertDateFormat, showError } from "../../utils/utils.js";
+import {
+  convertDateFormat,
+  isPermitted,
+  showError,
+} from "../../utils/utils.js";
 import Pagination from "../../components/commonUI/Pagination.js";
 import AnswerModal from "../ticketing/AnswerModal.jsx";
 import Confirm from "../../components/commonUI/Confirm.js";
@@ -19,7 +23,28 @@ import { searchAnalysisAction } from "../../redux/slice/analysis/searchAnalysisS
 import * as yup from "yup";
 import { updateAnalysisStatus } from "../../redux/slice/analysis/updateAnalysisSlice.js";
 import { analysisSearchSchema } from "../../utils/schema.js";
+import { getRolesAction } from "../../redux/slice/forForms/getRolesSlice.js";
+
 const Analysis = () => {
+  const menu = useSelector((state) => state.menu);
+  console.log("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM", menu);
+  const url = useLocation().pathname.replace("/", "");
+  console.log("UUUUUUUUUUUU", url);
+  const permitted = menu.modules.find((m) => m.slug === "setting");
+  // const permitted = menu.modules.find((m) => m.slug === url ? "setting":"");
+  console.log("PPPPPPPPPPPPPPPPPP", permitted);
+  // Getting Values For Form
+  // useEffect(() => {
+  //   dispatch(getRolesAction());
+  // }, []);
+  // useEffect(() => {
+  //   dispatch(getAnalysisDataListing(pageNumber));
+  // }, []);
+  const initialValues = {
+    searchKey: "",
+    name: "",
+    analysisType: "",
+  };
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [editModalData, setEditModalData] = useState(false);
@@ -33,30 +58,26 @@ const Analysis = () => {
   const searchAnalysis = useSelector((s) => s.getsearchAnalysis);
   const AnalysisAll = useSelector((s) => s.getAnalysis);
   const updateAnalysis = useSelector((s) => s.updateAnalysis);
-  // const updateStatusAnalysis = useSelector((s) => s);
-  // console.log(updateStatusAnalysis);
-  const startSerialNumber = pageNumber * 20 + 1;
-
-  // const validationSchema = yup.object({
-  //   searchKey: yup.string().matches(/^[a-zA-Z0-9\s]+$/, 'Special characters not allowed').min(1, "Please enter atleast 1 characters"),
-  //   name: yup.string().matches(/^[a-zA-Z0-9\s]+$/, 'Special characters not allowed').min(1, "Please enter atleast 1 characters"),
-  //   analysisType: yup.string(),
-  // });
+  const getAnalysisById = useSelector((s) => s.getAnalysisById);
+  const updateStatusAnalysis = useSelector((s) => s.updateStatusAnalysis);
 
   // yeh search karne per api call hogi
   useEffect(() => {
-    if (values.searchValue || values.status || values.userType) {
+    if (values.searchKey || values.name || values.analysisType) {
       dispatch(searchAnalysisAction({ ...values }));
     } else {
       setTimeout(() => {
         dispatch(getAnalysisDataListing(pageNumber));
+        resetForm();
       }, 300);
     }
+    // dispatch(getAnalysisDataListing(pageNumber));
   }, [
     pageNumber,
     deleteAnalysis.success,
     createAnalysis.success,
     updateAnalysis.success,
+    // updateStatusAnalysis.success,
   ]);
   // setting searched User
 
@@ -78,17 +99,12 @@ const Analysis = () => {
     }
   };
 
-  const initialValues = {
-    searchKey: "",
-    name: "",
-    analysisType: "",
-  };
-
   // handling Search
   const { handleChange, handleSubmit, values, resetForm, errors, touched } =
     useFormik({
       initialValues,
       validationSchema: analysisSearchSchema,
+      enableReinitialize: true,
       onSubmit: (data) => {
         // console.log("DATA",data);
         let searchData;
@@ -100,95 +116,7 @@ const Analysis = () => {
         dispatch(searchAnalysisAction({ ...data }));
       },
     });
-
-  const TableDataListing = () => {
-    return (
-      <>
-        {analysisList?.analysisData?.length === 0 ? (
-          <>
-            {" "}
-            <tr>
-              <td colSpan={"9"} align="center">
-                <h2 className="mt-5 mb-5"> No Data Found!</h2>
-              </td>
-            </tr>
-          </>
-        ) : (
-          <>
-            {analysisList?.analysisData?.map((item, i) => {
-              const serialNumber = (startSerialNumber + i)
-                .toString()
-                .padStart(2, "0");
-              return (
-                <>
-                  <tr key={item.id}>
-                    <td data-label="S.No">{serialNumber}</td>
-                    <td data-label="Name">{item.name}</td>
-                    <td data-label="Analytics Type">{item.analysisType} </td>
-                    <td data-label="Status"  className="tdGape">
-                      <Switch
-                        switchValue={item.status}
-                        switchId={item.id}
-                        handleChange={handleStatusChange}
-                      />
-                    </td>
-                    <td data-label="Created Date">
-                      {convertDateFormat(item.createdAt)}
-                    </td>
-
-                    <td>
-                      <button
-                        className=" btn-small greenbg"
-                        type="button"
-                        onClick={() => {
-                          setEditModalData(item.id);
-                          dispatch(getAnalysisByIdAction(item.id));
-                          // dispatch(getAnalysisByIdAction(item.id))
-                        }}
-                      >
-                        <img
-                          src={`${process.env.PUBLIC_URL}/icons-images/edit-small.svg`}
-                          alt="icon"
-                        />
-                      </button>
-
-                      <button
-                        className=" btn-small yellowbg"
-                        onClick={() => {
-                          setViewModalData(true);
-                          dispatch(getAnalysisByIdAction(item.id));
-                          // getAnalysisByIdAction(item.id)
-                        }}
-                      >
-                        <img
-                          src={`${process.env.PUBLIC_URL}/icons-images/view-small.svg`}
-                          alt="icon"
-                        />
-                      </button>
-                      <button
-                        className=" btn-small redbg"
-                        type="submit"
-                        onClick={() => {
-                          setShowConfirm(true);
-                          setDeleteUserId(item.id);
-                          // handleDel(item.id);
-                        }}
-                      >
-                        <img
-                          src={`${process.env.PUBLIC_URL}/icons-images/delete-small.svg`}
-                          alt="icon"
-                        />
-                      </button>
-                    </td>
-                  </tr>
-                </>
-              );
-            })}
-          </>
-        )}
-      </>
-    );
-  };
+  const startSerialNumber = pageNumber * 20 + 1;
 
   return (
     <>
@@ -202,71 +130,83 @@ const Analysis = () => {
           <form onSubmit={handleSubmit}>
             <div className="row mar-20">
               <div className=" col-lg-3 ">
-                <div className="form-group ">
-                  <input
-                    type="text"
-                    className="input-control"
-                    placeholder="Search by name"
-                    onChange={handleChange}
-                    value={values.name}
-                    name="name"
-                  />
-                </div>
+                {isPermitted(permitted?.isSearch) && (
+                  <div className="form-group ">
+                    <input
+                      type="text"
+                      className="input-control"
+                      placeholder="Search by name"
+                      onChange={handleChange}
+                      value={values.name}
+                      name="name"
+                    />
+                  </div>
+                )}
+
                 {showError(errors.name, touched.name)}
               </div>
 
               <div className=" col-lg-2">
-                <div className="form-group ">
-                  <select
-                    className="input-control"
-                    onChange={handleChange}
-                    value={values.analysisType}
-                    name="analysisType"
-                  >
-                    {" "}
-                    <option value="" selected>
-                    Analytics Type
-                    </option>
-                    <option value="1">Resolution</option>
-                    <option value="2">Purpose</option>
-                  </select>
-                </div>
+                {isPermitted(permitted?.isSearch) && (
+                  <div className="form-group ">
+                    <select
+                      className="input-control"
+                      onChange={handleChange}
+                      value={values.analysisType}
+                      name="analysisType"
+                    >
+                      {" "}
+                      <option value="" selected>
+                        Analytics Type
+                      </option>
+                      <option value="1">Resolution</option>
+                      <option value="2">Purpose</option>
+                    </select>
+                  </div>
+                )}
                 {showError(errors.analysisType, touched.analysisType)}
               </div>
 
-              <div className=" col-lg-2 col-5">
-                <div className="form-group ">
-                  <button className=" btn-md btn-md-blue" type="submit">
-                    <i className="fa-solid fa-magnifying-glass"></i>
-                  </button>
-                  <button
-                    className=" btn-md btn-md-blue"
-                    type="button"
-                    onClick={() => {
-                      dispatch(getAnalysisDataListing(pageNumber));
-                      resetForm();
-                      setPageNumber(0);
-                    }}
-                  >
-                    <i className="fa-solid fa-rotate-right"></i>
-                  </button>
-                </div>
-              </div>
+              {isPermitted(permitted?.isSearch) && (
+                <>
+                  <div className=" col-lg-2 col-5">
+                    <div className="form-group ">
+                      <button className=" btn-md btn-md-blue" type="submit">
+                        <i className="fa-solid fa-magnifying-glass"></i>
+                      </button>
+
+                      <button
+                        className=" btn-md btn-md-blue"
+                        type="button"
+                        onClick={() => {
+                          dispatch(getAnalysisDataListing(pageNumber));
+                          resetForm();
+                          setPageNumber(0);
+                        }}
+                      >
+                        <i className="fa-solid fa-rotate-right"></i>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
               <div className=" col-lg-2 col-7 ml-auto">
-                <div className="aling-right bflex">
-                  <button
-                    to="/doctors/add-doctor"
-                    className=" btn-md btn-md-blue ml-auto"
-                    type="button"
-                    onClick={() => setIsOpen(true)}
-                  >
-                    <img
-                      src={`${process.env.PUBLIC_URL}/icons-images/plus.svg`}
-                      alt="icon"
-                    />
-                    Add Analytics
-                  </button>
-                </div>
+                {isPermitted(permitted?.isAdd) && (
+                  <div className="aling-right bflex">
+                    <button
+                      to="/doctors/add-doctor"
+                      className=" btn-md btn-md-blue ml-auto"
+                      type="button"
+                      onClick={() => setIsOpen(true)}
+                    >
+                      <img
+                        src={`${process.env.PUBLIC_URL}/icons-images/plus.svg`}
+                        alt="icon"
+                      />
+                      Add Analytics
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </form>
@@ -282,24 +222,124 @@ const Analysis = () => {
                   <th scope="col">S.No</th>
                   <th scope="col">Name</th>
                   <th scope="col">Analytics Type</th>
-                  <th scope="col">Status</th>
+                  {isPermitted(permitted?.isStatus) && (
+                    <th scope="col">Status</th>
+                  )}
                   <th scope="col">Created Date</th>
-                  <th scope="col">Action</th>
+               <th scope="col"> Action</th>
                 </tr>
               </thead>
               <tbody>
-                <TableDataListing />
+                {analysisList?.analysisData?.length === 0 ? (
+                  <>
+                    {" "}
+                    <tr>
+                      <td colSpan={"9"} align="center">
+                        <h2 className="mt-5 mb-5"> No Data Found!</h2>
+                      </td>
+                    </tr>
+                  </>
+                ) : (
+                  <>
+                    {analysisList?.analysisData?.map((item, i) => {
+                      const serialNumber = (startSerialNumber + i)
+                        .toString()
+                        .padStart(2, "0");
+                      return (
+                        <>
+                          <tr key={item.id}>
+                            <td data-label="S.No">{serialNumber}</td>
+                            {/* <td data-label="Name">{item.name}</td> */}
+                            {/* `${(e?.title || e?.name)?.substring(0, 10)}...` */}
+                            <td data-label="Name">
+                              {item.name && item.name.length > 20
+                                ? `${item.name.substring(0, 20)}...`
+                                : item.name}
+                            </td>
+                            {/* <td data-label="Name">{`${(item.name)?.substring(0, 20)}...` }</td> */}
+                            <td data-label="Analytics Type">
+                              {item.analysisType}{" "}
+                            </td>
+                              {isPermitted(permitted?.isStatus) && (
+                            <td data-label="Status" className="tdGape">
+                                <Switch
+                                  switchValue={item.status}
+                                  switchId={item.id}
+                                  handleChange={handleStatusChange}
+                                />
+                            </td>
+                              )}
+                            <td data-label="Created Date">
+                              {convertDateFormat(item.createdAt)}
+                            </td>
+
+                            <td>
+                              {isPermitted(permitted?.isUpdate) && (
+                                <button
+                                  className=" btn-small greenbg"
+                                  type="button"
+                                  onClick={() => {
+                                    setEditModalData(item.id);
+                                    dispatch(getAnalysisByIdAction(item.id));
+                                    // dispatch(getAnalysisByIdAction(item.id))
+                                  }}
+                                >
+                                  <img
+                                    src={`${process.env.PUBLIC_URL}/icons-images/edit-small.svg`}
+                                    alt="icon"
+                                  />
+                                </button>
+                              )}
+                              {/* {isPermitted(permitted?.isRead) && ( */}
+                              <button
+                                className=" btn-small yellowbg"
+                                onClick={() => {
+                                  setViewModalData(true);
+                                  dispatch(getAnalysisByIdAction(item.id));
+                                  // dispatch(getAnalysisDataListing(pageNumber))
+                                  // getAnalysisByIdAction(item.id)
+                                }}
+                              >
+                                <img
+                                  src={`${process.env.PUBLIC_URL}/icons-images/view-small.svg`}
+                                  alt="icon"
+                                />
+                              </button>
+                              {/* )} */}
+                              {isPermitted(permitted?.isDelete) && (
+                                <button
+                                  className=" btn-small redbg"
+                                  type="submit"
+                                  onClick={() => {
+                                    setShowConfirm(true);
+                                    setDeleteUserId(item.id);
+                                    // handleDel(item.id);
+                                  }}
+                                >
+                                  <img
+                                    src={`${process.env.PUBLIC_URL}/icons-images/delete-small.svg`}
+                                    alt="icon"
+                                  />
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        </>
+                      );
+                    })}
+                  </>
+                )}
               </tbody>
             </table>
           </div>
           <div className="pagination-col">
             {/* <div className="lefttext">
-              <p>Showing Result {fetchData.totalItems} found</p>
-            </div> */}
+                <p>Showing Result {fetchData.totalItems} found</p>
+              </div> */}
             <div className="lefttext">
               {/* <button class=" btn-small bluebg" type="button">
-                <i class="fa-solid fa-chevron-down"></i>
-              </button> */}
+                  <i class="fa-solid fa-chevron-down"></i>
+                </button> */}
               <Pagination
                 totalPages={analysisList?.totalPages}
                 pageNumber={pageNumber}
@@ -324,7 +364,7 @@ const Analysis = () => {
         isOpen={editModalData !== false}
         onClose={() => setEditModalData(false)}
         setIsOpen={setEditModalData}
-        title="Edit Data"
+        title="Update Analytics"
         type="update"
         analysisId={editModalData} // Pass the ID here
       />
